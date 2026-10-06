@@ -8,14 +8,16 @@ Method: full code read, then a reproduction test for each suspected bug before a
 | Area | Before | After | Notes |
 |---|:-:|:-:|---|
 | Render pipeline | 6 | 9 | Bad briefs/formats no longer leave broken versions; honest exit status |
-| Studio / template | 6 | 7.5 | One bad brief no longer breaks every project; captions now driven by voiceover.json (H5 fixed) |
+| Studio / template | 6 | 9 | One bad brief no longer breaks every project; captions now driven by voiceover.json (H5 fixed) |
 | Inbox autopilot | 5 | 9 | No takeover of hand-made projects, no folder clashes, no retry loops |
 | Asset prep & delivery | 6 | 8.5 | No stale screenshots; unreadable images skipped |
 | Security | 8 | 9 | Shell injection and agent permissions fixed earlier today |
 | Cross-platform | 8 | 8 | Windows + Linux tested; macOS shares the Linux code path but is untested |
-| **Overall** | **6.5** | **8.5** | |
+| **Overall** | **6.5** | **9** | |
 
-Critical issues found: **0**. High: **6** (5 fixed, 1 needs your decision). Medium: **6** (5 fixed).
+Critical issues found: **0**. High: **7** (all fixed). Medium: **7** (all fixed). Low: L1, L3 fixed; L2 waits for a first real API run.
+
+_Updated 2026-10-06 (release pass): H5, H6, M7, L1, L3 fixed._
 
 ## Findings
 
@@ -32,11 +34,13 @@ Critical issues found: **0**. High: **6** (5 fixed, 1 needs your decision). Medi
 | M4 | Medium | Render | `--stills` created a real `v###` folder with only thumbnails, which deliver would then treat as the latest version. | **Fixed** — stills go to `_stills/`. | — |
 | M5 | Medium | Render | "✓ Done" was printed even when projects failed. | **Fixed** — prints "Finished with errors" and exits 1. | Exit code 1 on bad format. |
 | M6 | Medium | Autopilot | Report said "music: yes" even when music prep failed (FFmpeg missing). | **Fixed** — reports the failure and points to Doctor. | — |
-| M7 | Medium | Setup | Re-running setup after moving OS runs `npm ci`, which fails on Windows if Studio is still open (files locked). | Open — close Studio before setup. | Reasoned, not reproduced. |
+| M7 | Medium | Setup | Re-running setup after moving OS runs `npm ci`, which fails on Windows if Studio is still open (files locked). | **Fixed** — setup checks for a running Studio before `npm ci` and stops with "close Studio first" instead of failing half-way. | Studio detection shared with the upgrade guard (`_platform.mjs`). |
+| H6 | High | Launcher (release) | On a **fresh clone** (no `node_modules` yet) the launcher crashed before it could run setup: `upgrade.mjs` loaded `@remotion/bundler` at import time. Found during the release pass. | **Fixed** — the renderer/bundler load only when health checks run. | Fresh `git clone`: old code → `ERR_MODULE_NOT_FOUND`; new code → every launcher module loads. |
+| R1 | Low | Git on Windows | The Remotion skills have deeply nested files; cloning into a long path on Windows hits the 260-character limit. | **Documented** — clone with `git clone -c core.longpaths=true …` (README). | Reproduced in a deep temp folder; works with longpaths. |
 | S1 | High | Security | The new `brief-check.mjs` (run by `npm run draft`/`frames`, which the unattended agent may run) imports `src/…/schema.ts` in Node, and the agent could edit `src/**` — an edit to the schema could run code outside the render browser. | **Fixed** — `schema.ts` added to the agent's edit denylist; CLAUDE.md requires the same for any future Node import from `src`. | Live test: agent denied on `schema.ts`, still allowed on `src/lib/layout.ts`. |
-| L1 | Low | Template | CTA can break after a hyphen ("14-" / "day"), flagged by Visual QA. | Open | Visual QA |
+| L1 | Low | Template | CTA can break after a hyphen ("14-" / "day"), flagged by Visual QA. | **Fixed** — hyphenated words never split across lines (CTA, button, feature title/description, subheadline, stat labels). | 16x9 demo-app: "One-tap check-ins" now breaks at the space, not after "check-". |
 | L2 | Low | AI | Claude **API** features (launcher `a → 1–4`) were only tested against a mock server — no API key on this machine. | Open — first real run is the test. | Mock end-to-end |
-| L3 | Low | Brief history | Two AI rewrites in the same second would share one history filename. | Open | Reasoned |
+| L3 | Low | Brief history | Two AI rewrites in the same second would share one history filename. | **Fixed** — millisecond stamp plus a counter, and the copy refuses to overwrite. | Reasoned + code path |
 
 ## Checked and found OK
 

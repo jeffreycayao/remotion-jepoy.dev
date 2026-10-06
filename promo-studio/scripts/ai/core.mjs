@@ -157,8 +157,11 @@ export const writeBrief = (slug, brief) => {
   const p = briefPath(slug);
   const hist = path.join(path.dirname(p), "history");
   fs.mkdirSync(hist, { recursive: true });
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  if (fs.existsSync(p)) fs.copyFileSync(p, path.join(hist, `brief-${stamp}.json`));
+  // Millisecond stamp + counter: two rewrites in the same instant must never share (and lose) a history file.
+  const base = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 23);
+  let stamp = base;
+  for (let n = 2; fs.existsSync(path.join(hist, `brief-${stamp}.json`)); n++) stamp = `${base}-${n}`;
+  if (fs.existsSync(p)) fs.copyFileSync(p, path.join(hist, `brief-${stamp}.json`), fs.constants.COPYFILE_EXCL);
   fs.writeFileSync(p, JSON.stringify(brief, null, 2) + "\n");
   console.log(c.green(`  ✓ Saved projects/${slug}/brief.json`) + c.dim(` (previous version in history/brief-${stamp}.json)`));
 };

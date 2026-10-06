@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { useLayout } from "../../../lib/layout";
-import { PhoneFrame, useEnter } from "../components";
+import { Keep, PhoneFrame, useEnter } from "../components";
 import type { AppPromoProps, Feature } from "../schema";
 
 export const FeatureScene: React.FC<{
@@ -71,7 +71,7 @@ export const FeatureScene: React.FC<{
             translate: `0 ${interpolate(titleIn, [0, 1], [40, 0]) * u}px`,
           }}
         >
-          {feature.title}
+          <Keep text={feature.title} />
         </div>
         <div
           style={{
@@ -81,7 +81,7 @@ export const FeatureScene: React.FC<{
             translate: `0 ${interpolate(descIn, [0, 1], [30, 0]) * u}px`,
           }}
         >
-          {feature.description}
+          <Keep text={feature.description} />
         </div>
       </div>
       <div

@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate } from "remotion";
 import { useLayout } from "../../../lib/layout";
-import { Logo, useEnter } from "../components";
+import { Keep, Logo, useEnter } from "../components";
 import type { AppPromoProps } from "../schema";
 
 export const HookScene: React.FC<{ props: AppPromoProps }> = ({ props }) => {
@@ -59,7 +59,7 @@ export const HookScene: React.FC<{ props: AppPromoProps }> = ({ props }) => {
           lineHeight: 1.3,
         }}
       >
-        {props.hook.subheadline}
+        <Keep text={props.hook.subheadline} />
       </div>
     </AbsoluteFill>
   );

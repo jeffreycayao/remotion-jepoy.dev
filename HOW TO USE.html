@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body><title>Promo Studio Field Guide</title>
+<title>Promo Studio Field Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -446,6 +446,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
       <div><kbd>8</kbd><p><b>Open a folder</b><span>Jump to the inbox, renders, deliveries, archive or briefs.</span></p></div>
       <div><kbd>9</kbd><p><b>Doctor</b><span>Checks Node, npm, FFmpeg, Python and the folders.</span></p></div>
       <div><kbd>w</kbd><p><b>Autopilot</b><span>Watch the inbox and run pre-production automatically.</span></p></div>
+      <div><kbd>c</kbd><p><b>Chat with Claude</b><span>Talk to Claude right in the launcher window: briefs, brand colours, formats, copy. It asks before risky changes.</span></p></div>
       <div><kbd>a</kbd><p><b>AI</b><span>Auto-brief, hook variants, voiceover, visual QA, Ask Claude/Codex.</span></p></div>
       <div><kbd>p</kbd><p><b>Plugins</b><span>Install extra Remotion packages by group.</span></p></div>
       <div><kbd>d</kbd><p><b>Desktop shortcut</b><span>An icon that opens straight into the app window.</span></p></div>
@@ -498,6 +499,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
           <li>The video length comes from <code>timing</code> (30 fps). Transitions overlap neighbouring scenes.</li>
           <li>Only use stats you can prove. Promos are real advertising.</li>
           <li>Each AI rewrite saves the old brief in <code>history/</code> first.</li>
+          <li><b>Captions:</b> once the project has a voiceover (<kbd>a</kbd> → <kbd>3</kbd> or the autopilot), its lines appear as moving captions in your brand colour. Add <code>"captions": false</code> next to <code>"formats"</code> to hide them.</li>
         </ul>
       </div>
     </div>
@@ -528,9 +530,9 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
         <ul>
           <li><b>Ask Claude Code</b> <kbd>5</kbd>: describe a change and it edits briefs and templates.</li>
           <li><b>Ask Codex</b> <kbd>6</kbd>: the same, using your ChatGPT plan.</li>
-          <li><b>Interactive Claude Code</b> <kbd>7</kbd>: a full session where you approve each step.</li>
+          <li><b>Chat with Claude</b> <kbd>c</kbd> on the home screen (or <kbd>7</kbd> here): a conversation in the same window, already briefed on this studio. Pick a project or <kbd>n</kbd> for a new app, then just ask: <i>"take the brand colours from my logo"</i>, <i>"make it vertical only"</i>. Type <code>/exit</code> to return.</li>
         </ul>
-        <p>Unattended requests can only edit briefs and templates. For anything bigger, like adding packages or changing settings, use <kbd>7</kbd>.</p>
+        <p>Unattended requests can only edit briefs and templates. In the chat you're at the keyboard: brief edits and previews run straight away, anything bigger asks you first.</p>
       </div>
     </div>
     <div class="term"><pre><span class="p">$ </span>npm run ai -- status
@@ -578,7 +580,14 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
         <div class="ans"><p>Shorten that line in <code>brief.json</code>. The limits: headline 6 words, feature title 4, description 12. Then run Visual QA (<kbd>a</kbd> → <kbd>4</kbd>) or render a few still frames to check:</p>
         <div class="term"><pre><span class="p">$ </span>npm run frames -- fit-tracker 9x16 60,150,300</pre><button class="copy">Copy</button></div></div></details>
       <details><summary>Ask Claude Code refused to change a config or script</summary>
-        <div class="ans"><p>That's on purpose. Unattended requests can only edit briefs and templates. For a bigger change, use <kbd>a</kbd> → <kbd>7</kbd> and approve each step yourself.</p></div></details>
+        <div class="ans"><p>That's on purpose. Unattended requests can only edit briefs and templates. For a bigger change, chat with Claude (<kbd>c</kbd>) and approve each step yourself.</p></div></details>
+      <details><summary>My video has no captions</summary>
+        <div class="ans"><p>Captions come from the project's voiceover. Create one with <kbd>a</kbd> → <kbd>3</kbd>. If you changed the number of features or removed the stats after writing it, the old voiceover no longer fits and captions switch off until you write it again. Also check that <code>brief.json</code> doesn't say <code>"captions": false</code>.</p></div></details>
+      <details><summary>Setup says "Remotion Studio is running"</summary>
+        <div class="ans"><p>Setup reinstalls packages, and Windows can't replace files Studio has open. Close the Studio window (or press Ctrl+C where it runs) and run setup again.</p></div></details>
+      <details><summary>Cloning the project on Windows fails with "Filename too long"</summary>
+        <div class="ans"><p>Some bundled Remotion skill files have long paths. Clone with long paths enabled:</p>
+        <div class="term"><pre><span class="p">&gt; </span>git clone -c core.longpaths=true &lt;repo-url&gt;</pre><button class="copy">Copy</button></div></div></details>
       <details><summary>A new project doesn't show up in Studio</summary>
         <div class="ans"><p>Project names must be lowercase with hyphens (<code>my-app</code>). Run <code>npm run sync</code> or restart Studio. Folders starting with <code>_</code> are templates and are hidden on purpose.</p></div></details>
       <details><summary>Is it safe to upgrade Remotion?</summary>
@@ -645,4 +654,3 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
   });
 })();
 </script>
-</body></html>

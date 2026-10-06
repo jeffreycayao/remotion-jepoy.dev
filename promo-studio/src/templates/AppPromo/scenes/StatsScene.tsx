@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { useLayout } from "../../../lib/layout";
-import { useEnter } from "../components";
+import { Keep, useEnter } from "../components";
 import type { AppPromoProps, Stat } from "../schema";
 
 export const StatsScene: React.FC<{ props: AppPromoProps }> = ({ props }) => {
@@ -77,7 +77,7 @@ const StatCard: React.FC<{ stat: Stat; delay: number; color: string; width: numb
         {count.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
         {stat.suffix}
       </div>
-      <div style={{ fontSize: 34 * u, opacity: 0.75 }}>{stat.label}</div>
+      <div style={{ fontSize: 34 * u, opacity: 0.75 }}><Keep text={stat.label} /></div>
     </div>
   );
 };

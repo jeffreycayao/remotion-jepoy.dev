@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { useLayout } from "../../../lib/layout";
-import { Logo, Pill, useEnter } from "../components";
+import { Keep, Logo, Pill, useEnter } from "../components";
 import type { AppPromoProps } from "../schema";
 
 export const CtaScene: React.FC<{ props: AppPromoProps }> = ({ props }) => {
@@ -51,11 +51,11 @@ export const CtaScene: React.FC<{ props: AppPromoProps }> = ({ props }) => {
           translate: `0 ${interpolate(headIn, [0, 1], [40, 0]) * u}px`,
         }}
       >
-        {props.cta.headline}
+        <Keep text={props.cta.headline} />
       </div>
       <div style={{ opacity: btnIn, marginTop: 16 * u }}>
         <Pill color={props.brand.primary} scale={interpolate(btnIn, [0, 1], [0.6, 1]) * pulse}>
-          {props.cta.button}
+          <Keep text={props.cta.button} />
         </Pill>
       </div>
       <div style={{ fontSize: 36 * u, opacity: btnIn * 0.7, fontWeight: 600 }}>{props.cta.url}</div>

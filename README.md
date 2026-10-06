@@ -14,6 +14,8 @@ Only requirement before setup: **Node.js 18+** (`winget install OpenJS.NodeJS.LT
 Setup then installs everything else and tells you the exact command for anything it can't install itself
 (Python 3.9+, FFmpeg — both optional, only needed for the prep/deliver helpers; Linux may need Chrome libraries, which setup lists).
 
+**Cloning on Windows:** use `git clone -c core.longpaths=true <repo-url>` (some bundled Remotion skill files have long paths).
+
 **Moving the folder between computers/OSes:** just copy it and run setup again. It detects that `node_modules`
 and the Python venv were built for another OS and rebuilds them (native binaries differ per OS), and restores the
 executable bit on the `.sh` / `.command` files. Tested: Windows 11 and Debian 12 (Docker). macOS uses the same Node/bash code path.

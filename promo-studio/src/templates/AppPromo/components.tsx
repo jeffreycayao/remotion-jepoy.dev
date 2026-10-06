@@ -10,6 +10,21 @@ import {
 } from "remotion";
 import { useLayout } from "../../lib/layout";
 
+/** Lines may break at spaces only: keeps "14-day" or "check-ins" in one piece instead of "14-" / "day". */
+export const Keep: React.FC<{ text: string }> = ({ text }) => (
+  <>
+    {text.split(/(\S+-\S+)/).map((part, i) =>
+      i % 2 ? (
+        <span key={i} style={{ whiteSpace: "nowrap" }}>
+          {part}
+        </span>
+      ) : (
+        part
+      ),
+    )}
+  </>
+);
+
 /** Resolve a brief asset path: "" → null, http(s) → as-is, else a file in public/. */
 export const resolveAsset = (path: string): string | null => {
   if (!path) return null;

@@ -120,3 +120,13 @@ export const installHint = (tool) => {
   };
   return hints[tool]?.[process.platform] ?? hints[tool]?.linux;
 };
+
+/** True while Remotion Studio from this project is running (Windows locks its files, so installs must wait). */
+export const studioRunning = () => {
+  const needle = path.join(STUDIO, "node_modules", "@remotion", "cli");
+  if (IS_WIN) {
+    const ps = `@(Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -like '*${needle.replace(/'/g, "''")}*' -and $_.CommandLine -like '* studio*' }).Count`;
+    return Number(spawnSync("powershell", ["-NoProfile", "-Command", ps], { encoding: "utf8" }).stdout.trim()) > 0;
+  }
+  return spawnSync("ps", ["-axww", "-o", "command="], { encoding: "utf8" }).stdout.split("\n").some((l) => l.includes(needle) && / studio\b/.test(l));
+};

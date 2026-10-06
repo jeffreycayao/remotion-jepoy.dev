@@ -13,6 +13,7 @@ import {
   ROOT,
   run,
   STUDIO,
+  studioRunning,
   TOOLS,
   VENV_PY,
   version,
@@ -46,6 +47,11 @@ const hasModules = fs.existsSync(path.join(STUDIO, "node_modules"));
 if (force || !hasModules || installedFor !== PLATFORM_ID) {
   if (hasModules && installedFor && installedFor !== PLATFORM_ID) {
     console.log(`  node_modules was installed for ${installedFor}; reinstalling native binaries for ${PLATFORM_ID}…`);
+  }
+  // npm ci deletes node_modules first; on Windows that fails half-way if Studio still has files open.
+  if (hasModules && studioRunning()) {
+    console.log(c.red("  ✗ Remotion Studio is running. Close its window (or press Ctrl+C where it runs), then run setup again."));
+    process.exit(1);
   }
   // `npm ci` = clean install exactly from package-lock.json (which lists binaries for every OS).
   const r = run("npm", ["ci", "--no-audit", "--no-fund"]);

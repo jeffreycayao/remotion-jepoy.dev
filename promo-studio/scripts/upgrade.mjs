@@ -8,13 +8,10 @@
 //
 // Upgrade = back up package.json + lock → `remotion upgrade` (all @remotion/* together, --skip-skills)
 // → health checks → automatic rollback (restore + npm ci) if any check fails.
-import { bundle } from "@remotion/bundler";
-import { getCompositions, renderStill } from "@remotion/renderer";
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { c, IS_WIN, listProjects, MARKER, PLATFORM_ID, ROOT, run, STUDIO } from "./_platform.mjs";
+import { c, listProjects, MARKER, PLATFORM_ID, ROOT, run, STUDIO, studioRunning } from "./_platform.mjs";
 
 const CACHE_DIR = path.join(STUDIO, ".cache");
 const CACHE = path.join(CACHE_DIR, "updates.json");
@@ -74,14 +71,6 @@ const remotionDeps = () => {
 };
 
 /** Is a Studio for this project running? (npm can't replace files it has open on Windows.) */
-const studioRunning = () => {
-  const needle = path.join(STUDIO, "node_modules", "@remotion", "cli");
-  if (IS_WIN) {
-    const ps = `@(Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -like '*${needle.replace(/'/g, "''")}*' -and $_.CommandLine -like '* studio*' }).Count`;
-    return Number(spawnSync("powershell", ["-NoProfile", "-Command", ps], { encoding: "utf8" }).stdout.trim()) > 0;
-  }
-  return spawnSync("ps", ["-axww", "-o", "command="], { encoding: "utf8" }).stdout.split("\n").some((l) => l.includes(needle) && / studio\b/.test(l));
-};
 
 /** Every check is what an upgrade could plausibly break in this project. */
 export const verify = async ({ log = console.log } = {}) => {
@@ -117,6 +106,9 @@ export const verify = async ({ log = console.log } = {}) => {
     return `${listProjects().length} project(s)`;
   });
   await check("Compositions bundle and render (every format)", async () => {
+    // Loaded here, not at the top: the launcher imports this file before setup has installed node_modules.
+    const { bundle } = await import("@remotion/bundler");
+    const { getCompositions, renderStill } = await import("@remotion/renderer");
     const serveUrl = await bundle({ entryPoint: path.join(STUDIO, "src", "index.ts") });
     const comps = await getCompositions(serveUrl);
     const sample = [comps.find((x) => x.id === "AppPromo-Template"), ...comps.filter((x) => x.id.startsWith(`${listProjects()[0]}-`))].filter(Boolean);
