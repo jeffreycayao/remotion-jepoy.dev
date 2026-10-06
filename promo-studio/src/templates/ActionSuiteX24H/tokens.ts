@@ -26,18 +26,23 @@ export const C = {
   error: "#F0524A", // TagPilot "broken automation" state only
 };
 
-/** Scene boundaries in absolute frames (30 fps, 1050 frames). Mirrors the voiceover script. */
+/**
+ * Scene boundaries in absolute frames (30 fps), measured from the recorded voiceover
+ * (00_INBOX/atmt-action-suite/ElevenLabs_…mp3, 30.3 s) by its phrase pauses. Each cut lands
+ * 4 frames before its phrase so the picture leads the word. Re-measure if the voiceover changes:
+ *   ffmpeg -i voiceover.mp3 -af silencedetect=noise=-35dB:d=0.07 -f null -
+ */
 export const T = {
-  idle: 0, // 1A — 100,000 idle leads
-  math: 120, // 1B — 100,000 × 5% × ₱999
-  punch: 180, // camera punch-in on = ₱4,995,000
-  outbound: 255, // 2A — X24H Outbound, 1 engine
-  extreme: 360, // 2B — 14 parallel engines
-  tagpilot: 570, // 3A
-  mcp: 675, // 3B
-  offer: 795, // 4A — ₱499
-  cta: 915, // 4B
-  total: 1050,
+  idle: 0, // 0.00 s "May one hundred K contacts sa inbox mo?"
+  math: 79, // 2.75 s "Five percent conversion lang sa nine-nine-nine pesos offer,"
+  punch: 182, // 6.20 s "halos five million pesos na 'yan."
+  outbound: 258, // 8.75 s "I-reactivate sila gamit ang X-twenty-four-H Extreme:"
+  extreme: 364, // 12.28 s "hanggang fourteen parallel engines … sa Omni Inbox."
+  tagpilot: 512, // 17.19 s "Fix tag errors gamit ang Tag-Pilot,"
+  mcp: 586, // 19.67 s "at gumawa agad ng Web-cake pages gamit ang M-C-P Library."
+  offer: 710, // 23.79 s "Four hundred ninety-nine pesos lang first month mo."
+  cta: 798, // 26.75 s "Bisitahin ang action suite dot automatika dot P-H."
+  total: 955, // voice ends 30.15 s; ~1.7 s hold on the CTA
 };
 
 export const useFrameLayout = () => {

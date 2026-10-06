@@ -13,7 +13,7 @@ const ContactField: React.FC = () => {
   const rows = vertical ? 40 : 22;
   const gx = width / cols;
   const gy = height / rows;
-  const lit = interpolate(frame, [6, 95], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+  const lit = interpolate(frame, [6, T.math - 10], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
   const fade = interpolate(frame, [T.math, T.math + 30], [1, 0.35], clamp);
   return (
     <svg width={width} height={height} style={{ position: "absolute", inset: 0, opacity: fade }}>

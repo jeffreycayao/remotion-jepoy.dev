@@ -21,7 +21,7 @@ const useVoiceover = () => {
   return VOICEOVER_FILES.find((f) => names.has(f));
 };
 
-/** Automatika ActionSuite — 35 s promo (1050 frames @ 30 fps), timed to the Taglish voiceover. */
+/** Automatika ActionSuite — ~32 s promo (T.total frames @ 30 fps), timed to the recorded Taglish voiceover. */
 export const ActionSuiteX24HPromo: React.FC = () => {
   const voiceover = useVoiceover();
   const span = (from: number, to: number) => ({ from, durationInFrames: to - from });
