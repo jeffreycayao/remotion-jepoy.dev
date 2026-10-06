@@ -1,0 +1,112 @@
+{
+  "$comment": "Plugin catalog for Promo Studio. Groups with \"auto\": true are installed by setup. Manage with the launcher (p) or: npm run plugins -- list | install <group|package…> | remove <package…> | ensure",
+  "groups": [
+    {
+      "id": "core",
+      "title": "Core (always installed)",
+      "auto": true,
+      "packages": [
+        { "name": "@remotion/renderer", "desc": "Render videos from Node — used by the render pipeline" },
+        { "name": "@remotion/bundler", "desc": "Bundles the project for rendering" },
+        { "name": "@remotion/transitions", "desc": "Scene transitions (fade, slide, wipe…)" },
+        { "name": "@remotion/google-fonts", "desc": "Google Fonts with render-blocking load" },
+        { "name": "@remotion/media", "desc": "WebCodecs <Video>/<Audio> tags" },
+        { "name": "@remotion/zod-types", "desc": "Color pickers etc. in the props editor" },
+        { "name": "@remotion/layout-utils", "desc": "Measure/fit text to boxes" },
+        { "name": "@remotion/captions", "desc": "Caption primitives (TikTok-style pages)" }
+      ]
+    },
+    {
+      "id": "production",
+      "title": "Production pack (recommended — installed by setup)",
+      "auto": true,
+      "packages": [
+        { "name": "@remotion/animation-utils", "desc": "Interpolate colors, transforms and CSS styles" },
+        { "name": "@remotion/fonts", "desc": "Load local brand fonts (.woff2/.otf) from public/" },
+        { "name": "@remotion/gif", "desc": "Timeline-synced GIFs" },
+        { "name": "@remotion/lottie", "desc": "Lottie animations (icons, UI micro-animations)" },
+        { "name": "@remotion/paths", "desc": "SVG path drawing, morphing, stroke reveal" },
+        { "name": "@remotion/shapes", "desc": "Circles, stars, polygons as SVG" },
+        { "name": "@remotion/noise", "desc": "Organic movement / drifting backgrounds" },
+        { "name": "@remotion/motion-blur", "desc": "Cinematic motion blur and trails" },
+        { "name": "@remotion/media-utils", "desc": "Audio/video metadata, audio visualization" },
+        { "name": "@remotion/preload", "desc": "Preload assets for smooth Studio preview" },
+        { "name": "@remotion/media-parser", "desc": "Read duration/dimensions of client footage" },
+        { "name": "@remotion/light-leaks", "desc": "Light leak overlays for transitions" },
+        { "name": "@remotion/effects", "desc": "Canvas effects (blur, glow, distortion…)" },
+        { "name": "@remotion/sfx", "desc": "Built-in sound effects library (whooshes, clicks, pops)" },
+        { "name": "@remotion/rough-notation", "desc": "Hand-drawn highlights, circles, underlines" },
+        { "name": "@remotion/starburst", "desc": "Starburst ray backgrounds" },
+        { "name": "@remotion/mac-cursors", "desc": "macOS cursors for app walkthrough demos" },
+        { "name": "@remotion/rounded-text-box", "desc": "TikTok-style rounded multiline text boxes" },
+        { "name": "@remotion/animated-emoji", "desc": "Google's animated emojis as components" },
+        { "name": "@remotion/studio", "desc": "Studio APIs (save props, reevaluate, etc.)" },
+        { "name": "mediabunny", "desc": "Multimedia toolkit used by Remotion (trim/convert/inspect)" }
+      ]
+    },
+    {
+      "id": "captions-ai",
+      "title": "Captions & AI audio",
+      "packages": [
+        { "name": "@remotion/install-whisper-cpp", "desc": "Local Whisper.cpp transcription → word-level captions (downloads a model on first use)" },
+        { "name": "@remotion/whisper-webgpu", "desc": "Transcribe in the browser via WebGPU" },
+        { "name": "@remotion/whisper-web", "desc": "Transcribe in the browser via WASM" },
+        { "name": "@huggingface/transformers", "desc": "ML models in the browser (used by whisper-webgpu)" },
+        { "name": "@remotion/openai-whisper", "desc": "Convert OpenAI Whisper API output to captions (needs API key)" },
+        { "name": "@remotion/elevenlabs", "desc": "Use ElevenLabs voiceover output (needs API key)" },
+        { "name": "@remotion/video-matting", "desc": "Cut a person out of footage (transparent foreground)" }
+      ]
+    },
+    {
+      "id": "motion-engines",
+      "title": "Advanced motion & 3D",
+      "packages": [
+        { "name": "@remotion/gsap", "desc": "Drive GSAP timelines from the Remotion frame" },
+        { "name": "@remotion/rive", "desc": "Rive interactive animations" },
+        { "name": "@remotion/three", "desc": "React Three Fiber 3D scenes (3D phone mockups)" },
+        { "name": "@remotion/skia", "desc": "React Native Skia graphics (heavy)" }
+      ]
+    },
+    {
+      "id": "styling",
+      "title": "Styling (needs a line in remotion.config.ts after install)",
+      "packages": [
+        { "name": "@remotion/tailwind-v4", "desc": "TailwindCSS v4 — then call enableTailwind() in remotion.config.ts" },
+        { "name": "@remotion/enable-scss", "desc": "SCSS — then call enableScss() in remotion.config.ts" }
+      ]
+    },
+    {
+      "id": "cloud-render",
+      "title": "Cloud rendering (needs a cloud account)",
+      "packages": [
+        { "name": "@remotion/lambda", "desc": "Render in parallel on AWS Lambda" },
+        { "name": "@remotion/cloudrun", "desc": "Render on Google Cloud Run" },
+        { "name": "@remotion/vercel", "desc": "Render on Vercel Sandbox" }
+      ]
+    },
+    {
+      "id": "integration",
+      "title": "Integration & tooling",
+      "packages": [
+        { "name": "@remotion/player", "desc": "Embed live previews in a website/client portal" },
+        { "name": "@remotion/webcodecs", "desc": "In-browser media conversion" },
+        { "name": "@remotion/mcp", "desc": "Remotion docs MCP server for AI assistants" },
+        { "name": "@remotion/studio-protocol", "desc": "Create installable Studio elements" },
+        { "name": "@remotion/licensing", "desc": "Manage a Remotion.pro company license" }
+      ]
+    },
+    {
+      "id": "codecs",
+      "title": "Extra codecs for client footage",
+      "packages": [
+        { "name": "@mediabunny/prores", "desc": "Decode Apple ProRes .mov (common from editors)" },
+        { "name": "@mediabunny/ac3", "desc": "AC-3 / E-AC-3 audio (broadcast, Blu-ray)" },
+        { "name": "@mediabunny/dts", "desc": "DTS audio" }
+      ]
+    }
+  ],
+  "excluded": [
+    { "name": "@remotion/zod-types-v3", "reason": "For Zod 3 — this project uses Zod 4 (@remotion/zod-types)" },
+    { "name": "@remotion/tailwind", "reason": "TailwindCSS v3 — use @remotion/tailwind-v4" }
+  ]
+}

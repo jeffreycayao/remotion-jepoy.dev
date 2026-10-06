@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "promo-studio", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "promo-studio", "run", "dev", "--", "--no-open"], "port": 3000 }
+  ]
+}

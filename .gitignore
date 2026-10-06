@@ -1,0 +1,29 @@
+# Remotion-with-jepoy.dev
+# (promo-studio/.gitignore covers the Remotion app: node_modules, out, .env, .app-profile, .cache …)
+
+# Per-machine installs — rebuilt by setup on every OS
+node_modules/
+tools/.venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+.env.*
+
+# Production media: large binaries and client material. Back these up separately.
+# Only each folder's README is tracked so the pipeline layout exists on a fresh clone.
+00_INBOX/*
+!00_INBOX/README.txt
+20_RENDERS/*
+!20_RENDERS/README.txt
+30_DELIVERY/*
+!30_DELIVERY/README.txt
+90_ARCHIVE/*
+!90_ARCHIVE/README.txt
+
+# Tool/OS clutter
+.playwright-mcp/
+.DS_Store
+Thumbs.db
+desktop.ini

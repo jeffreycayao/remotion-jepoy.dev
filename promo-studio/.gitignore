@@ -1,0 +1,19 @@
+node_modules
+dist
+.DS_Store
+.env
+
+# Ignore the output video from Git but not videos you import into src/.
+out
+
+# Generated
+src/projects.generated.ts
+
+# App-window browser profile (window size, Studio settings)
+.app-profile
+
+# Autopilot scratch space
+.autopilot
+
+# Update checks, smoke-test stills, upgrade backups
+.cache

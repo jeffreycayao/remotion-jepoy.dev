@@ -1,0 +1,20 @@
+{
+  "$comment": "Inbox autopilot settings. Providers are tried in order until one succeeds. claude = Claude Code, codex = OpenAI Codex (ChatGPT), opencode = GLM via Z.ai Coding Plan. Leave a model empty to use that tool's default.",
+  "providers": ["claude", "codex", "opencode"],
+  "models": {
+    "claude": "",
+    "codex": "",
+    "opencode": "zai-coding-plan/glm-5.3"
+  },
+  "steps": {
+    "brief": true,
+    "hooks": true,
+    "voiceover": true,
+    "draft": true,
+    "qa": true
+  },
+  "hookCount": 3,
+  "draftFormats": ["9x16"],
+  "settleSeconds": 15,
+  "pollSeconds": 5
+}

@@ -1,0 +1,4 @@
+# Keep launcher line endings correct when this folder moves between OSes via git
+*.sh       text eol=lf
+*.command  text eol=lf
+*.bat      text eol=crlf
