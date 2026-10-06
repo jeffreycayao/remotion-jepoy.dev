@@ -243,6 +243,20 @@ const SkeletonUI: React.FC<{
   );
 };
 
+/** White text, or near-black when the fill is too light for white to read (e.g. lime, yellow). */
+const textOn = (fill: string) => {
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})/i.exec(fill.trim());
+  if (!m) return "white";
+  const hex = m[1].length === 3 ? [...m[1]].map((c) => c + c).join("") : m[1];
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  // Contrast vs white = 1.05 / (lum + 0.05); below 3:1 switch to dark text.
+  return 1.05 / (lum + 0.05) >= 3 ? "white" : "#0b0a06";
+};
+
 /** Pill button used in CTA. */
 export const Pill: React.FC<{ children: React.ReactNode; color: string; scale?: number }> = ({
   children,
@@ -254,7 +268,7 @@ export const Pill: React.FC<{ children: React.ReactNode; color: string; scale?: 
     <div
       style={{
         background: color,
-        color: "white",
+        color: textOn(color),
         fontWeight: 700,
         fontSize: 44 * u,
         padding: `${24 * u}px ${56 * u}px`,

@@ -6,7 +6,7 @@ Remotion-based factory for app promo videos. Read `README.md` for the folder map
 
 1. `cd promo-studio && npm run new -- <slug> "<App Name>"` (slug = kebab-case).
 2. Use files in `00_INBOX/<slug>/` if present: `npm run tools -- prep-screens <slug> --apply`, `prep-logo`, `prep-audio`.
-3. Fill `projects/<slug>/brief.json` → `props` (schema: `src/templates/AppPromo/schema.ts`). Pick brand colors from the logo/screenshots; write punchy copy (headline ≤ 6 words, feature descriptions ≤ 12 words).
+3. Fill `projects/<slug>/brief.json` → `props` (schema: `src/templates/AppPromo/schema.ts`). Pick brand colors from the logo/screenshots; write punchy copy (headline ≤ 6 words, feature descriptions ≤ 12 words). A new brief is full of `[bracketed]` placeholders — replace every one (final renders refuse briefs that still have any). Ask the user for anything you can't find (real stats, URL, brand colours) instead of inventing it.
 4. Verify visually: `npm run frames -- <slug> 9x16 60,150,300` (stills land in `promo-studio/out/frames/`, never in 20_RENDERS).
 5. Only run `npm run render` / `npm run deliver` when the user asks for final output.
 
