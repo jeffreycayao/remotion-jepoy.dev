@@ -16,7 +16,7 @@ import {
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { checkBrief } from "./brief-check.mjs";
+import { checkBrief, placeholderHelp } from "./brief-check.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RENDERS = path.resolve(root, "..", "20_RENDERS");
@@ -84,6 +84,16 @@ for (const slug of slugs) {
     continue;
   }
   const brief = check.brief;
+  // A final render of starter text is never what anyone wants; a draft is fine but gets a clear warning.
+  if (check.placeholders.length) {
+    if (!draft && !flag("allow-placeholders")) {
+      console.error(`✗ ${placeholderHelp(slug, check.placeholders)}
+    (Render anyway with --allow-placeholders.)`);
+      process.exitCode = 1;
+      continue;
+    }
+    console.warn(`⚠ ${placeholderHelp(slug, check.placeholders)}`);
+  }
   const formats = brief.formats.filter(
     (f) => !onlyFormats || onlyFormats.includes(f),
   );

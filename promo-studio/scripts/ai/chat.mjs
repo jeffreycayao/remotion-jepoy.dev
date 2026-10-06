@@ -30,7 +30,8 @@ videos with Remotion and want help building the pieces: brief.json content, bran
 
 Project facts (CLAUDE.md has the full rules):
 - A project = promo-studio/projects/<slug>/brief.json. "props" must match src/templates/AppPromo/schema.ts —
-  read it before writing. Raw client files live in 00_INBOX/<slug>/ (read-only); prepared assets go in
+  read it before writing. Text in [square brackets] is starter placeholder copy from `npm run new` — replace
+  all of it (final renders refuse briefs that still contain any). Raw client files live in 00_INBOX/<slug>/ (read-only); prepared assets go in
   promo-studio/public/projects/<slug>/ via \`npm run tools -- prep-screens|prep-logo|prep-audio <slug> … --apply\`.
 - New project: \`npm run new -- <slug> "<App Name>"\` (from promo-studio/).
 - Formats (the "formats" array in brief.json): ${formats().join("; ")}.

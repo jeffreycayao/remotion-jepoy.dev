@@ -185,7 +185,12 @@ const actions = {
   async new(slug, ...nameParts) {
     slug ??= (await ask("  Project slug (kebab-case, e.g. fit-tracker): ")).toLowerCase();
     const name = nameParts.join(" ") || (await ask("  App name (e.g. Fit Tracker): "));
-    if (npm("new", "--", slug, ...(name ? [name] : [])).ok) openPath(path.join(DIR.inbox, slug));
+    if (!npm("new", "--", slug, ...(name ? [name] : [])).ok) return;
+    console.log(`    1. Fill it now with Claude  ${c.dim("(chat — describe the app, paste a link, ask for colours…)")}
+    2. I'll drop files in the inbox  ${c.dim("(opens the folder; then press w for the autopilot)")}`);
+    const k = await ask("  Choose (Enter = later): ");
+    if (k === "1") chat(slug);
+    if (k === "2") openPath(path.join(DIR.inbox, slug));
   },
   async draft(slug, ...rest) {
     slug ??= await pickProject();

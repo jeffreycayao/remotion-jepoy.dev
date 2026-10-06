@@ -1,37 +1,56 @@
 {
   "template": "AppPromo",
-  "formats": ["16x9", "9x16", "1x1", "4x5"],
+  "formats": [
+    "16x9",
+    "9x16",
+    "1x1",
+    "4x5"
+  ],
   "props": {
     "appName": "My App",
-    "tagline": "Habits that stick.",
+    "tagline": "[Your tagline]",
     "logo": "",
     "brand": {
-      "primary": "#FF5A5F",
-      "secondary": "#FFB347",
-      "background": "#120A14",
+      "primary": "#6366F1",
+      "secondary": "#22D3EE",
+      "background": "#111827",
       "text": "#FFFFFF",
-      "font": "Poppins"
+      "font": "Inter"
     },
     "hook": {
-      "headline": "Build habits that actually stick",
-      "subheadline": "Tiny daily wins. Massive results."
+      "headline": "[Your hook headline]",
+      "subheadline": "[Why it matters, in one line]"
     },
     "features": [
-      { "title": "One-tap check-ins", "description": "Log a habit in under a second — no friction, no excuses.", "icon": "✅", "screenshot": "" },
-      { "title": "Streaks that motivate", "description": "Watch your chain grow and never want to break it.", "icon": "🔥", "screenshot": "" },
-      { "title": "Insights that guide you", "description": "See what works, drop what doesn't.", "icon": "📈", "screenshot": "" }
+      {
+        "title": "[Feature one]",
+        "description": "[What it does for the user]",
+        "icon": "1",
+        "screenshot": ""
+      },
+      {
+        "title": "[Feature two]",
+        "description": "[What it does for the user]",
+        "icon": "2",
+        "screenshot": ""
+      },
+      {
+        "title": "[Feature three]",
+        "description": "[What it does for the user]",
+        "icon": "3",
+        "screenshot": ""
+      }
     ],
-    "stats": [
-      { "value": 1.2, "prefix": "", "suffix": "M", "label": "Habits tracked" },
-      { "value": 4.8, "prefix": "", "suffix": "★", "label": "Average rating" },
-      { "value": 87, "prefix": "", "suffix": "%", "label": "30-day retention" }
-    ],
+    "stats": [],
     "cta": {
-      "headline": "Start your streak today.",
-      "button": "Download free",
-      "url": "pulse.app"
+      "headline": "[Your call to action]",
+      "button": "[Button text]",
+      "url": "[yourapp.com]"
     },
-    "audio": { "music": "", "volume": 0.6 },
+    "audio": {
+      "music": "",
+      "volume": 0.6
+    },
     "timing": {
       "hookSeconds": 3,
       "featureSeconds": 3.5,

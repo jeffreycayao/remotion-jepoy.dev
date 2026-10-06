@@ -581,6 +581,8 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
         <div class="term"><pre><span class="p">$ </span>npm run frames -- fit-tracker 9x16 60,150,300</pre><button class="copy">Copy</button></div></div></details>
       <details><summary>Ask Claude Code refused to change a config or script</summary>
         <div class="ans"><p>That's on purpose. Unattended requests can only edit briefs and templates. For a bigger change, chat with Claude (<kbd>c</kbd>) and approve each step yourself.</p></div></details>
+      <details><summary>My render shows [placeholder] text, or looks like the sample</summary>
+        <div class="ans"><p>A new project starts with placeholder copy in square brackets. It shows up in the video until you replace it, and final renders refuse to start while any is left. Fill the brief in one of these ways: chat with Claude (<kbd>c</kbd>), drop screenshots and a logo in <code>00_INBOX/&lt;project&gt;</code> and press <kbd>w</kbd>, use the AI brief (<kbd>a</kbd> → <kbd>1</kbd>), or edit <code>brief.json</code> yourself.</p></div></details>
       <details><summary>My video has no captions</summary>
         <div class="ans"><p>Captions come from the project's voiceover. Create one with <kbd>a</kbd> → <kbd>3</kbd>. If you changed the number of features or removed the stats after writing it, the old voiceover no longer fits and captions switch off until you write it again. Also check that <code>brief.json</code> doesn't say <code>"captions": false</code>.</p></div></details>
       <details><summary>Setup says "Remotion Studio is running"</summary>

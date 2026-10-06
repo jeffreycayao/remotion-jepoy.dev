@@ -33,10 +33,11 @@ fs.mkdirSync(path.resolve(root, "..", "00_INBOX", slug), { recursive: true });
 execFileSync(process.execPath, [path.join(root, "scripts", "sync-projects.mjs")], { stdio: "inherit" });
 
 console.log(`
-✓ Created "${brief.props.appName}"
-  1. Drop raw client files in      00_INBOX/${slug}/
-  2. Prep screenshots:             npm run tools -- prep-screens ${slug} --apply
-  3. Edit copy & colors:           promo-studio/projects/${slug}/brief.json
-  4. Preview:                      npm run dev   → Projects/${slug}
-  5. Render:                       npm run render -- ${slug}
+✓ Created "${brief.props.appName}" — the brief holds [placeholder] text until you fill it in.
+  Fill it (any one):
+    • Chat with Claude:            launcher c  (or npm run chat -- ${slug})
+    • Autopilot from your files:   drop screenshots + logo in 00_INBOX/${slug}/, then launcher w
+    • AI brief (API key):          npm run ai -- brief ${slug}
+    • By hand:                     promo-studio/projects/${slug}/brief.json
+  Then preview (npm run dev → Projects/${slug}) and render (npm run draft -- ${slug}).
 `);

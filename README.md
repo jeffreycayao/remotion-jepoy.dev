@@ -152,6 +152,8 @@ Not offered: `@remotion/zod-types-v3` (this project uses Zod 4) and `@remotion/t
 
 (Run `npm` commands from `promo-studio/`. The `.bat` menu does all of this for you.)
 
+A new project starts with **[placeholder]** text (no fake stats). Drafts and previews warn while any is left, and final renders refuse until it's filled — by chat (**c**), the autopilot (**w**), the AI brief (**a → 1**) or by hand.
+
 ## Formats
 
 | Key | Size | Use |

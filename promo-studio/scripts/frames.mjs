@@ -6,7 +6,7 @@ import { bundle } from "@remotion/bundler";
 import { renderStill, selectComposition } from "@remotion/renderer";
 import fs from "node:fs";
 import path from "node:path";
-import { checkBrief } from "./brief-check.mjs";
+import { checkBrief, placeholderHelp } from "./brief-check.mjs";
 import { c, listProjects, STUDIO } from "./_platform.mjs";
 
 const [slug, format = "9x16", framesArg = "60,150,300"] = process.argv.slice(2);
@@ -24,6 +24,7 @@ if (!check.ok || !check.brief.formats.includes(format)) {
   process.exit(1);
 }
 const brief = check.brief;
+if (check.placeholders.length) console.log(c.yellow(`  ⚠ ${placeholderHelp(slug, check.placeholders)}`));
 const outDir = path.join(STUDIO, "out", "frames", `${slug}-${format}`);
 fs.mkdirSync(outDir, { recursive: true });
 
