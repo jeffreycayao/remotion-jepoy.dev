@@ -2,6 +2,20 @@
 
 Remotion-based factory for app promo videos. Read `README.md` for the folder map. Remotion skills are in `.claude/skills/` (load `remotion-best-practices` before writing Remotion markup).
 
+## Where every file goes (paths from the workspace root — this file's folder)
+
+| What | Where | How |
+|---|---|---|
+| Original files from the user (screenshots, logo, music, voiceover, notes) | `00_INBOX/<slug>/` | **Copy them here first**, even when the user gives a path elsewhere. Never edit them. |
+| Prepared assets the video loads | `promo-studio/public/projects/<slug>/` | Remotion can only load files from `public/`. Use the prep tools (`npm run tools -- prep-*`), which copy from the inbox. |
+| Brief (content + `"template"`) | `promo-studio/projects/<slug>/brief.json` | Every video is a project, including bespoke designs (see below). |
+| Preview stills | `promo-studio/out/frames/` | `npm run frames` only — scratch, not deliverables. |
+| Videos (drafts, finals) | `20_RENDERS/<slug>/` | **Only** `npm run draft` / `npm run render`. Never `npx remotion render`/`still` directly. |
+| Platform-ready files | `30_DELIVERY/<slug>/` | Only `npm run deliver`. |
+| Zipped projects | `90_ARCHIVE/` | Only `npm run tools -- archive`. |
+
+**Bespoke designs** (a one-off look the AppPromo brief can't express): build it in `promo-studio/src/templates/<Name>/` (export the component and its length in frames), register it in `promo-studio/src/templates/registry.ts`, then create a project for it — `promo-studio/projects/<app>-<piece>/brief.json` with `{"template": "<Name>", "formats": ["16x9", "9x16"], "props": {}}` — and render it with `npm run draft|render -- <app>-<piece>`. Never add hard-coded `<Composition>`s to `Root.tsx`: they can't be rendered, versioned or delivered. The AI brief tools only work on AppPromo projects.
+
 ## When asked to "make a promo for <app>"
 
 1. `cd promo-studio && npm run new -- <slug> "<App Name>"` (slug = kebab-case).
@@ -36,7 +50,7 @@ Interactive Claude Code started in the launcher terminal with `--append-system-p
 - `brief.json` is the source of truth for project content. Never hand-edit `src/projects.generated.ts` (run `npm run sync`).
 - Never overwrite or delete anything in `20_RENDERS/`, `30_DELIVERY/`, `90_ARCHIVE/` — renders are auto-versioned.
 - `00_INBOX/` is read-only raw material.
-- Template changes affect every project. For a one-off look, add a new template under `src/templates/` and a `"template"` switch in `Root.tsx` rather than forking AppPromo with conditionals.
+- Template changes affect every project. For a one-off look, add a bespoke template (see "Where every file goes") rather than forking AppPromo with conditionals.
 - Animations must be frame-driven (`useCurrentFrame`, `interpolate`, `spring`) — never CSS transitions/animations.
 - Upgrade Remotion only with `npm run updates -- upgrade` (backup → `remotion upgrade --skip-skills` → health checks → rollback). **Never run `npx remotion upgrade --help` to read flags — it ignores `--help` and performs the upgrade.** Read flags from `node_modules/@remotion/cli/dist/` instead. After any dependency change run `npm run updates -- verify`.
 - Install `@remotion/*` packages with `npm run plugins -- install <pkg|group>` (wraps `npx remotion add`, version-pinned). New packages worth keeping go into `plugins.json` so other machines get them; production-pack items are auto-installed by setup.

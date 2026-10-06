@@ -149,7 +149,12 @@ export const briefPath = (slug) => path.join(STUDIO, "projects", slug, "brief.js
 export const readBrief = (slug) => {
   const p = briefPath(slug);
   if (!fs.existsSync(p)) throw new Error(`No project "${slug}". Create it first: npm run new -- ${slug}`);
-  return JSON.parse(fs.readFileSync(p, "utf8"));
+  const brief = JSON.parse(fs.readFileSync(p, "utf8"));
+  // AI brief/hooks/voiceover/QA write AppPromo fields; a bespoke template keeps its copy in code.
+  if (brief.template && brief.template !== "AppPromo") {
+    throw new Error(`"${slug}" uses the custom template ${brief.template} — the AI brief tools only work with AppPromo projects. Edit src/templates/${brief.template}/ instead (chat: launcher c).`);
+  }
+  return brief;
 };
 
 /** Writes the brief after saving the previous version to projects/<slug>/history/. */

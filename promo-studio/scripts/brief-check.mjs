@@ -34,6 +34,14 @@ export const checkBrief = (slug) => {
   if (!Array.isArray(brief.formats) || !brief.formats.length || bad.length) {
     return { ok: false, error: `"formats" must list some of ${FORMATS.join(", ")}${bad.length ? ` (unknown: ${bad.join(", ")})` : ""}` };
   }
+  // Bespoke template: its copy lives in src/templates/<Name>/, so there are no brief props to validate.
+  if (brief.template && brief.template !== "AppPromo") {
+    const registry = fs.readFileSync(path.join(STUDIO, "src", "templates", "registry.ts"), "utf8");
+    if (!/^\w+$/.test(brief.template) || !new RegExp(String.raw`^\s*${brief.template}:\s*\{`, "m").test(registry)) {
+      return { ok: false, error: `unknown template "${brief.template}" — register it in src/templates/registry.ts` };
+    }
+    return { ok: true, brief, placeholders: [] };
+  }
   const parsed = appPromoSchema.safeParse(brief.props);
   if (!parsed.success) {
     const i = parsed.error.issues[0];

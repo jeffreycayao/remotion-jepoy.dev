@@ -3,6 +3,7 @@ import { FORMATS, FPS } from "./lib/layout";
 import { PROJECTS, type Voiceover } from "./projects.generated";
 import { AppPromo, calculateAppPromoMetadata } from "./templates/AppPromo/AppPromo";
 import { appPromoSchema, type AppPromoProps } from "./templates/AppPromo/schema";
+import { CUSTOM_TEMPLATES } from "./templates/registry";
 
 /** One caption line per scene from voiceover.json — only if it still matches the brief's scenes. */
 const voiceoverLines = (slug: string, props: AppPromoProps, vo: Voiceover | undefined, enabled = true) => {
@@ -23,6 +24,29 @@ export const RemotionRoot: React.FC = () => {
           Edit the brief.json — Studio hot-reloads. Run `npm run sync` after adding a project. */}
       <Folder name="Projects">
         {PROJECTS.map(({ slug, brief, voiceover }) => {
+          // Bespoke template (src/templates/registry.ts): same ids/formats, so render/deliver work unchanged.
+          if (brief.template && brief.template !== "AppPromo") {
+            const custom = CUSTOM_TEMPLATES[brief.template];
+            if (!custom) {
+              console.warn(`[promo-studio] Skipping project "${slug}": unknown template "${brief.template}" — add it to src/templates/registry.ts.`);
+              return null;
+            }
+            return (
+              <Folder key={slug} name={slug}>
+                {(Array.isArray(brief.formats) ? brief.formats : []).filter((f) => f in FORMATS).map((fmt) => (
+                  <Composition
+                    key={fmt}
+                    id={`${slug}-${fmt}`}
+                    component={custom.component}
+                    durationInFrames={custom.durationInFrames}
+                    fps={FPS}
+                    width={FORMATS[fmt].width}
+                    height={FORMATS[fmt].height}
+                  />
+                ))}
+              </Folder>
+            );
+          }
           // One invalid brief must not take down Studio for every project: skip it and say why.
           const parsed = appPromoSchema.safeParse(brief.props);
           if (!parsed.success) {
@@ -52,6 +76,7 @@ export const RemotionRoot: React.FC = () => {
           );
         })}
       </Folder>
+
 
       {/* Sandbox for designing the template itself. Props edited in the sidebar save back here. */}
       <Folder name="Templates">

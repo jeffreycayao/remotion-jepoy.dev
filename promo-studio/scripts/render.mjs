@@ -127,10 +127,12 @@ for (const slug of slugs) {
       });
       const name = `${slug}_${fmt}_${tag}`;
 
-      // Poster frame: end of the hook scene (logo + headline fully visible).
-      const posterFrame = Math.min(
-        composition.durationInFrames - 1,
-        Math.round(brief.props.timing.hookSeconds * composition.fps) - 10,
+      // Poster frame: end of the hook scene (logo + headline fully visible). Bespoke templates
+      // have no timing props, so they use a frame 2 s in.
+      const hookSeconds = brief.props?.timing?.hookSeconds ?? 2;
+      const posterFrame = Math.max(
+        0,
+        Math.min(composition.durationInFrames - 1, Math.round(hookSeconds * composition.fps) - 10),
       );
       const thumb = path.join(dir, "thumbs", `${name}.jpg`);
       await renderStill({

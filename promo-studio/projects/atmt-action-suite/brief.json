@@ -7,45 +7,76 @@
     "4x5"
   ],
   "props": {
-    "appName": "Action Suite",
-    "tagline": "[Your tagline]",
-    "logo": "",
+    "appName": "ActionSuite",
+    "tagline": "Turn follow-up into action.",
+    "logo": "projects/atmt-action-suite/logo.png",
     "brand": {
-      "primary": "#6366F1",
-      "secondary": "#22D3EE",
-      "background": "#111827",
-      "text": "#FFFFFF",
-      "font": "Inter"
+      "primary": "#DBF914",
+      "secondary": "#C9B79E",
+      "background": "#0B0A06",
+      "text": "#F6F0E5",
+      "font": "Poppins"
     },
     "hook": {
-      "headline": "[Your hook headline]",
-      "subheadline": "[Why it matters, in one line]"
+      "headline": "Nilalamig na ang warm leads mo?",
+      "subheadline": "I-follow up sila sa Pancake — mabilis, hindi mano-mano."
     },
     "features": [
       {
-        "title": "[Feature one]",
-        "description": "[What it does for the user]",
-        "icon": "1",
-        "screenshot": ""
+        "title": "X24H Follow-up Engine",
+        "description": "I-target ang warm leads by tag — may schedule at history.",
+        "icon": "⚡",
+        "screenshot": "projects/atmt-action-suite/screens/01-x24h-followup.png"
       },
       {
-        "title": "[Feature two]",
-        "description": "[What it does for the user]",
-        "icon": "2",
-        "screenshot": ""
+        "title": "Lead hanggang repeat buyer",
+        "description": "Mula ad, nurture, sale, hanggang balik-bili — tuloy ang usapan.",
+        "icon": "🔁",
+        "screenshot": "projects/atmt-action-suite/screens/02-customer-journey.png"
       },
       {
-        "title": "[Feature three]",
-        "description": "[What it does for the user]",
-        "icon": "3",
-        "screenshot": ""
+        "title": "10 tools, 1 membership",
+        "description": "Contact Sniper, TagPilot, Prompt Vault at iba pa — isang bayad.",
+        "icon": "🧰",
+        "screenshot": "projects/atmt-action-suite/screens/03-chrome-tools.png"
+      },
+      {
+        "title": "Gumagana sa Pancake mo",
+        "description": "Official Pancake PH partner. Kita mo bawat galaw, i-stop anytime.",
+        "icon": "✅",
+        "screenshot": "projects/atmt-action-suite/screens/04-pancake-partner.png"
       }
     ],
-    "stats": [],
+    "stats": [
+      {
+        "value": 10,
+        "prefix": "",
+        "suffix": "",
+        "label": "Chrome tools"
+      },
+      {
+        "value": 40,
+        "prefix": "",
+        "suffix": "+",
+        "label": "Message templates"
+      },
+      {
+        "value": 48,
+        "prefix": "",
+        "suffix": "h",
+        "label": "Libreng trial"
+      },
+      {
+        "value": 50,
+        "prefix": "",
+        "suffix": "%",
+        "label": "Off unang buwan · ATMT50"
+      }
+    ],
     "cta": {
-      "headline": "[Your call to action]",
-      "button": "[Button text]",
-      "url": "[yourapp.com]"
+      "headline": "Subukan nang libre ngayon.",
+      "button": "Start your free trial",
+      "url": "actionsuite.automatika.ph"
     },
     "audio": {
       "music": "",
@@ -55,7 +86,7 @@
       "hookSeconds": 3,
       "featureSeconds": 3.5,
       "statsSeconds": 3,
-      "ctaSeconds": 3.5,
+      "ctaSeconds": 4,
       "transitionFrames": 15
     }
   }
