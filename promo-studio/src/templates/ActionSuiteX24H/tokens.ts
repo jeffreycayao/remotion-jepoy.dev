@@ -47,10 +47,22 @@ export const T = {
 
 export const useFrameLayout = () => {
   const { width, height } = useVideoConfig();
-  const u = Math.min(width, height) / 1080;
-  const vertical = height / width > 1.4;
+  const tall = height / width > 1.4; // 9:16
+  // 1:1 and 4:5 are too narrow for the widescreen layout (it needs ~1700 u of width), so they reuse
+  // the stacked vertical layout, scaled down until its ~1500 u-tall stack fits the shorter frame.
+  const narrow = !tall && height / width > 0.9;
+  const u = narrow ? Math.min(width / 1080, height / 1500) : Math.min(width, height) / 1080;
+  const vertical = tall || narrow;
   // t: text scale for UI cards — phone viewers see 9:16 full-screen, so card text needs to be larger.
-  return { width, height, u, vertical, t: vertical ? 1.3 : 1, safeTop: vertical ? height * 0.12 : 70 * u, safeBottom: vertical ? height * 0.18 : 70 * u };
+  return {
+    width,
+    height,
+    u,
+    vertical,
+    t: tall ? 1.3 : narrow ? 1.15 : 1,
+    safeTop: tall ? height * 0.12 : narrow ? height * 0.06 : 70 * u,
+    safeBottom: tall ? height * 0.18 : narrow ? height * 0.06 : 70 * u,
+  };
 };
 
 export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;

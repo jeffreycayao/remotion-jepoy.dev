@@ -1,5 +1,5 @@
 {
   "template": "ActionSuiteX24H",
-  "formats": ["16x9", "9x16"],
+  "formats": ["16x9", "9x16", "1x1", "4x5"],
   "props": {}
 }
