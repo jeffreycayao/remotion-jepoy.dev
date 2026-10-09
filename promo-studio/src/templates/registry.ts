@@ -15,6 +15,7 @@ import { MainCommercial as PersonalAdCommercial, PERSONAL_AD_DURATION } from "./
 import { MainCommercial as FastAdCommercial, FAST_AD_DURATION } from "./FastAd/MainCommercial";
 import { MainWebinarPromo, WEBINAR_DURATION } from "./WebinarPromo/MainWebinarPromo";
 import { MainSalesAd, SALES_AD_DURATION } from "./SalesAd/MainSalesAd";
+import { MainPromo as SMMWebinarPromo, SMM_WEBINAR_DURATION } from "./SMMWebinar/MainPromo";
 import { GO_LIVE_FAST_DURATION, MainCommercial as GoLiveFastCommercial } from "./GoLiveFast/MainCommercial";
 
 export type CustomTemplate = {
@@ -26,6 +27,7 @@ export const CUSTOM_TEMPLATES: Record<string, CustomTemplate> = {
   SalesAd: { component: MainSalesAd, durationInFrames: SALES_AD_DURATION },
   GoLiveFast: { component: GoLiveFastCommercial, durationInFrames: GO_LIVE_FAST_DURATION },
   WebinarPromo: { component: MainWebinarPromo, durationInFrames: WEBINAR_DURATION },
+  SMMWebinar: { component: SMMWebinarPromo, durationInFrames: SMM_WEBINAR_DURATION },
   PancakePartner: { component: PancakePartnerCommercial, durationInFrames: PANCAKE_PARTNER_DURATION },
   PancakeEcosystem: { component: PancakeEcosystemCommercial, durationInFrames: PANCAKE_ECOSYSTEM_DURATION },
   PersonalAd: { component: PersonalAdCommercial, durationInFrames: PERSONAL_AD_DURATION },
