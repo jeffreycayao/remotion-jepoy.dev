@@ -16,7 +16,7 @@ export const placeholderFields = (props, at = "props") =>
 export const placeholderHelp = (slug, fields) =>
   `"${slug}" still has starter placeholders (${fields.length}: ${fields.slice(0, 3).join(", ")}${fields.length > 3 ? ", …" : ""}).
 ` +
-  `    Fill the brief first: launcher c (chat with Claude), drop files in 00_INBOX/${slug} and press w (autopilot),
+  `    Fill the brief first: launcher c (chat with Claude), drop files in inbox/${slug} and press w (autopilot),
 ` +
   `    launcher a → 1 (AI brief), or edit projects/${slug}/brief.json.`;
 
@@ -33,6 +33,10 @@ export const checkBrief = (slug) => {
   const bad = (brief.formats ?? []).filter((f) => !FORMATS.includes(f));
   if (!Array.isArray(brief.formats) || !brief.formats.length || bad.length) {
     return { ok: false, error: `"formats" must list some of ${FORMATS.join(", ")}${bad.length ? ` (unknown: ${bad.join(", ")})` : ""}` };
+  }
+  if (brief.compositionIdPrefix !== undefined &&
+      (typeof brief.compositionIdPrefix !== "string" || !/^[A-Za-z][A-Za-z0-9-]*$/.test(brief.compositionIdPrefix))) {
+    return { ok: false, error: '"compositionIdPrefix" must start with a letter and contain only letters, numbers, or hyphens' };
   }
   // Bespoke template: its copy lives in src/templates/<Name>/, so there are no brief props to validate.
   if (brief.template && brief.template !== "AppPromo") {

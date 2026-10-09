@@ -4,7 +4,7 @@ import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { c, IS_MAC, IS_WIN, run, STUDIO } from "./_platform.mjs";
+import { c, IS_MAC, IS_WIN, run, STUDIO, STUDIO_PORT } from "./_platform.mjs";
 
 // Separate profile = separate browser process, so we can tell when the window closes,
 // and Studio never mixes with the user's normal tabs/extensions.
@@ -99,7 +99,7 @@ const killTree = (child) => {
  * Shared with the upgrade checks, which test exactly this — it relies on Studio's console output.
  */
 export const startStudioServer = async ({ echo = true } = {}) => {
-  const server = spawn(process.execPath, [CLI, "studio", "--no-open"], {
+  const server = spawn(process.execPath, [CLI, "studio", "--no-open", "--port", String(STUDIO_PORT)], {
     cwd: STUDIO,
     stdio: ["ignore", "pipe", "pipe"],
     detached: !IS_WIN,

@@ -6,7 +6,7 @@
 //   npm run render -- <slug> --stills              thumbnails only
 //   npm run render -- --all                        every project
 //
-// Output: ../20_RENDERS/<slug>/v###/<slug>_<format>_v###.mp4 (+ thumbs/, brief.snapshot.json, render-log.json)
+// Output: out/renders/<slug>/v###/<slug>_<format>_v###.mp4 (+ thumbs/, brief.snapshot.json, render-log.json)
 import { bundle } from "@remotion/bundler";
 import {
   renderMedia,
@@ -15,11 +15,8 @@ import {
 } from "@remotion/renderer";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { checkBrief, placeholderHelp } from "./brief-check.mjs";
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const RENDERS = path.resolve(root, "..", "20_RENDERS");
+import { RENDERS, ROOT, STUDIO } from "./_platform.mjs";
 
 // ── args ────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
@@ -35,7 +32,7 @@ const onlyFormats = opt("formats")
   .map((s) => s.trim());
 
 const allSlugs = fs
-  .readdirSync(path.join(root, "projects"), { withFileTypes: true })
+  .readdirSync(path.join(STUDIO, "projects"), { withFileTypes: true })
   .filter((d) => d.isDirectory() && !d.name.startsWith("_"))
   .map((d) => d.name);
 
@@ -56,11 +53,11 @@ const nextVersionDir = (slug) => {
   // Thumbnails-only runs are not deliverable versions — keep them out of the v### sequence.
   if (stillsOnly) return { dir: path.join(base, "_stills"), tag: "stills" };
   fs.mkdirSync(base, { recursive: true });
-  const nums = fs
-    .readdirSync(base)
-    .map((n) => /^v(\d{3})$/.exec(n)?.[1])
-    .filter(Boolean)
-    .map(Number);
+  const versionNumbers = (dir) => fs.existsSync(dir)
+    ? fs.readdirSync(dir).map((n) => /^v(\d{3})$/.exec(n)?.[1]).filter(Boolean).map(Number)
+    : [];
+  // Read old versions to keep numbering monotonic; never write to the legacy folder.
+  const nums = [...versionNumbers(base), ...versionNumbers(path.join(ROOT, "20_RENDERS", slug))];
   const tag = `v${String((nums.length ? Math.max(...nums) : 0) + 1).padStart(3, "0")}`;
   return { dir: path.join(base, tag), tag };
 };
@@ -71,11 +68,12 @@ const bar = (p) =>
 // ── run ─────────────────────────────────────────────────────────────────
 console.log("▸ Bundling project…");
 const serveUrl = await bundle({
-  entryPoint: path.join(root, "src", "index.ts"),
+  entryPoint: path.join(STUDIO, "src", "index.ts"),
+  publicDir: path.join(STUDIO, "public"),
 });
 
 for (const slug of slugs) {
-  const briefPath = path.join(root, "projects", slug, "brief.json");
+  const briefPath = path.join(STUDIO, "projects", slug, "brief.json");
   // Validate first, so a bad brief or format never leaves an empty version folder behind.
   const check = checkBrief(slug);
   if (!check.ok) {
@@ -108,7 +106,7 @@ for (const slug of slugs) {
   fs.mkdirSync(path.join(dir, "thumbs"), { recursive: true });
   fs.copyFileSync(briefPath, path.join(dir, "brief.snapshot.json"));
 
-  console.log(`\n▸ ${slug} → ${path.relative(path.resolve(root, ".."), dir)}`);
+  console.log(`\n▸ ${slug} → ${path.relative(STUDIO, dir)}`);
   const log = {
     slug,
     version: tag,
@@ -119,7 +117,7 @@ for (const slug of slugs) {
 
   try {
     for (const fmt of formats) {
-      const id = `${slug}-${fmt}`;
+      const id = `${brief.compositionIdPrefix ?? slug}-${fmt}`;
       const composition = await selectComposition({
         serveUrl,
         id,
@@ -188,7 +186,7 @@ for (const slug of slugs) {
     if (!draft) {
       fs.renameSync(dir, `${dir}-failed`);
       console.error(
-        `  Partial output kept in ${path.relative(path.resolve(root, ".."), dir)}-failed`,
+        `  Partial output kept in ${path.relative(STUDIO, dir)}-failed`,
       );
     }
     continue;
@@ -203,6 +201,10 @@ for (const slug of slugs) {
 
 if (process.exitCode) {
   console.log(`\n✗ Finished with errors — see the ✗ lines above.`);
+} else if (stillsOnly) {
+  console.log(`\n✓ Done. Thumbnails are in out/renders/<slug>/_stills/.`);
+} else if (draft) {
+  console.log(`\n✓ Done. Drafts are in out/renders/<slug>/_drafts/.`);
 } else {
-  console.log(`\n✓ Done. Renders are in 20_RENDERS/. Next: "npm run deliver -- <slug>" to make platform-ready files.`);
+  console.log(`\n✓ Done. Renders are in out/renders/. Next: "npm run deliver -- <slug>" to make platform-ready files.`);
 }

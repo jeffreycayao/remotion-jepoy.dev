@@ -6,22 +6,25 @@ Remotion-based factory for app promo videos. Read `README.md` for the folder map
 
 | What | Where | How |
 |---|---|---|
-| Original files from the user (screenshots, logo, music, voiceover, notes) | `00_INBOX/<slug>/` | **Copy them here first**, even when the user gives a path elsewhere. Never edit them. |
+| Original files from the user (screenshots, logo, music, voiceover, notes) | `promo-studio/inbox/<slug>/` | **Copy them here first**, even when the user gives a path elsewhere. Never edit them. |
 | Prepared assets the video loads | `promo-studio/public/projects/<slug>/` | Remotion can only load files from `public/`. Use the prep tools (`npm run tools -- prep-*`), which copy from the inbox. |
 | Brief (content + `"template"`) | `promo-studio/projects/<slug>/brief.json` | Every video is a project, including bespoke designs (see below). |
 | Preview stills | `promo-studio/out/frames/` | `npm run frames` only — scratch, not deliverables. |
-| Videos (drafts, finals) | `20_RENDERS/<slug>/` | **Only** `npm run draft` / `npm run render`. Never `npx remotion render`/`still` directly. |
-| Platform-ready files | `30_DELIVERY/<slug>/` | Only `npm run deliver`. |
-| Zipped projects | `90_ARCHIVE/` | Only `npm run tools -- archive`. |
+| Videos (drafts, finals) and visual QA | `promo-studio/out/renders/<slug>/` | **Only** `npm run draft` / `npm run render` for videos. Never `npx remotion render`/`still` directly. |
+| Platform-ready files | `promo-studio/out/delivery/<slug>/` | Only `npm run deliver`. |
+| Zipped projects | `promo-studio/out/archive/` | Only `npm run tools -- archive`. |
+
+The workspace-root `00_INBOX/`, `20_RENDERS/`, `30_DELIVERY/`, and `90_ARCHIVE/` folders are historical. Leave their contents untouched; new work belongs under `promo-studio/`.
+Studio uses port 3100. Check its owner before restarting Studio, and never start this project on port 3000, which is reserved for Licensya PH v2.
 
 **Bespoke designs** (a one-off look the AppPromo brief can't express): build it in `promo-studio/src/templates/<Name>/` (export the component and its length in frames), register it in `promo-studio/src/templates/registry.ts`, then create a project for it — `promo-studio/projects/<app>-<piece>/brief.json` with `{"template": "<Name>", "formats": ["16x9", "9x16"], "props": {}}` — and render it with `npm run draft|render -- <app>-<piece>`. Never add hard-coded `<Composition>`s to `Root.tsx`: they can't be rendered, versioned or delivered. The AI brief tools only work on AppPromo projects.
 
 ## When asked to "make a promo for <app>"
 
 1. `cd promo-studio && npm run new -- <slug> "<App Name>"` (slug = kebab-case).
-2. Use files in `00_INBOX/<slug>/` if present: `npm run tools -- prep-screens <slug> --apply`, `prep-logo`, `prep-audio`.
+2. Use files in `promo-studio/inbox/<slug>/` if present: `npm run tools -- prep-screens <slug> --apply`, `prep-logo`, `prep-audio`.
 3. Fill `projects/<slug>/brief.json` → `props` (schema: `src/templates/AppPromo/schema.ts`). Pick brand colors from the logo/screenshots; write punchy copy (headline ≤ 6 words, feature descriptions ≤ 12 words). A new brief is full of `[bracketed]` placeholders — replace every one (final renders refuse briefs that still have any). Ask the user for anything you can't find (real stats, URL, brand colours) instead of inventing it.
-4. Verify visually: `npm run frames -- <slug> 9x16 60,150,300` (stills land in `promo-studio/out/frames/`, never in 20_RENDERS).
+4. Verify visually: `npm run frames -- <slug> 9x16 60,150,300` (stills land in `promo-studio/out/frames/`).
 5. Only run `npm run render` / `npm run deliver` when the user asks for final output.
 
 Shortcut when an API key is configured: `npm run ai -- brief <slug>` drafts the whole brief from the inbox, then review it and `npm run ai -- qa <slug>`.
@@ -40,16 +43,16 @@ Interactive Claude Code started in the launcher terminal with `--append-system-p
 
 ## Inbox autopilot (`scripts/autopilot.mjs`, `scripts/ai/providers.mjs`)
 
-- Watches `00_INBOX/<folder>/`; slug = kebab-case of the folder name; state in `projects/<slug>/autopilot.json` (inbox fingerprint + brief hash used to protect hand edits).
+- Watches `promo-studio/inbox/<folder>/`; slug = kebab-case of the folder name; state in `projects/<slug>/autopilot.json` (inbox fingerprint + brief hash used to protect hand edits).
 - Providers are the user's subscription CLIs, tried in `autopilot.config.json` order (default claude → codex → opencode/GLM). Keep every provider run read-only (see the runner comments) and keep validating answers with the Zod schemas before writing.
 - Codex gets images via `-i` without names, so the prompt lists their order; GLM (`vision: false`) never receives vision-only tasks.
 - Brief/hooks/voiceover/QA prompts and schemas are shared with the Claude API path (`scripts/ai/*.mjs` exports) — change them in one place.
 
 ## Rules
 
-- `brief.json` is the source of truth for project content. Never hand-edit `src/projects.generated.ts` (run `npm run sync`).
-- Never overwrite or delete anything in `20_RENDERS/`, `30_DELIVERY/`, `90_ARCHIVE/` — renders are auto-versioned.
-- `00_INBOX/` is read-only raw material.
+- Every project has a `brief.json` for its template, formats, and props. AppPromo copy lives in its brief; bespoke templates can also contain project-specific copy in `src/templates/<Name>/`. Never hand-edit `src/projects.generated.ts` (run `npm run sync`).
+- Never overwrite or delete anything in `promo-studio/out/renders/`, `promo-studio/out/delivery/`, or `promo-studio/out/archive/` by hand — renders are auto-versioned.
+- `promo-studio/inbox/` is read-only raw material. Leave the historical workspace-root media folders untouched too.
 - Template changes affect every project. For a one-off look, add a bespoke template (see "Where every file goes") rather than forking AppPromo with conditionals.
 - Animations must be frame-driven (`useCurrentFrame`, `interpolate`, `spring`) — never CSS transitions/animations.
 - Upgrade Remotion only with `npm run updates -- upgrade` (backup → `remotion upgrade --skip-skills` → health checks → rollback). **Never run `npx remotion upgrade --help` to read flags — it ignores `--help` and performs the upgrade.** Read flags from `node_modules/@remotion/cli/dist/` instead. After any dependency change run `npm run updates -- verify`.

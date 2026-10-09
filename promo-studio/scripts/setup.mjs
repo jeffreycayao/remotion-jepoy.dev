@@ -4,12 +4,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
+  ARCHIVE,
   c,
+  DELIVERY,
   findSystemPython,
+  INBOX,
   installHint,
   IS_WIN,
   MARKER,
   PLATFORM_ID,
+  RENDERS,
   ROOT,
   run,
   STUDIO,
@@ -33,9 +37,9 @@ actionHeader(`Setup · ${PLATFORM_ID}`);
 
 // 1 ── Node ────────────────────────────────────────────────────────────────
 step(1, "Node.js");
-const major = Number(process.versions.node.split(".")[0]);
-if (major < 18) {
-  console.log(c.red(`  ✗ Node ${process.versions.node} is too old (need 18+). Install: ${installHint("node")}`));
+const [major, minor] = process.versions.node.split(".").map(Number);
+if (major < 22 || (major === 22 && minor < 18)) {
+  console.log(c.red(`  ✗ Node ${process.versions.node} is too old (need 22.18.0+). Install: ${installHint("node")}`));
   process.exit(1);
 }
 ok(`Node ${process.versions.node}, npm ${version("npm", "-v") ?? "?"}`);
@@ -89,8 +93,17 @@ if (run("npx", ["remotion", "browser", "ensure"], { quiet: true }).ok) {
 // 5 ── Python venv for tools/promo.py ───────────────────────────────────────
 step(5, "Python helpers");
 const venvDir = path.join(TOOLS, ".venv");
-if (fs.existsSync(venvDir) && (force || !fs.existsSync(VENV_PY))) {
-  // A venv is OS-specific (Scripts\python.exe vs bin/python) — rebuild if it came from another OS.
+const venvProbe = fs.existsSync(VENV_PY)
+  ? run(VENV_PY, ["-c", "import sys; print(sys.prefix)"], { quiet: true })
+  : null;
+const actualPrefix = venvProbe?.ok ? path.resolve(venvProbe.stdout.trim()) : "";
+const expectedPrefix = path.resolve(venvDir);
+const prefixMatches = IS_WIN
+  ? actualPrefix.toLowerCase() === expectedPrefix.toLowerCase()
+  : actualPrefix === expectedPrefix;
+const venvUsable = prefixMatches && run(VENV_PY, ["-m", "pip", "--version"], { quiet: true }).ok;
+if (fs.existsSync(venvDir) && (force || !venvUsable)) {
+  // A copied venv can point to a missing Python installation, even on the same OS.
   console.log("  Rebuilding venv for this OS…");
   fs.rmSync(venvDir, { recursive: true, force: true });
 }
@@ -134,10 +147,10 @@ if (!IS_WIN) {
   }
   ok("Launchers marked executable");
 }
-for (const d of ["00_INBOX", "20_RENDERS", "30_DELIVERY", "90_ARCHIVE"]) {
-  fs.mkdirSync(path.join(ROOT, d), { recursive: true });
+for (const d of [INBOX, RENDERS, DELIVERY, ARCHIVE]) {
+  fs.mkdirSync(d, { recursive: true });
 }
-ok("Pipeline folders ready (00_INBOX, 20_RENDERS, 30_DELIVERY, 90_ARCHIVE)");
+ok("Pipeline folders ready (inbox, out/renders, out/delivery, out/archive)");
 run("node", [path.join(STUDIO, "scripts", "sync-projects.mjs")], { quiet: true });
 
 // 8 ── App window browser ──────────────────────────────────────────────────

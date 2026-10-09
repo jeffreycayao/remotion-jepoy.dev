@@ -5,7 +5,7 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { c, ROOT, STUDIO } from "../_platform.mjs";
+import { c, INBOX, ROOT, STUDIO } from "../_platform.mjs";
 
 // ── config ────────────────────────────────────────────────────────────────
 for (const envFile of [path.join(STUDIO, ".env"), path.join(ROOT, ".env")]) {
@@ -172,9 +172,9 @@ export const writeBrief = (slug, brief) => {
 };
 
 /** Free-text notes the user dropped in the inbox (notes.txt / notes.md / brief.txt / url.txt).
- *  Accepts a project slug (→ 00_INBOX/<slug>) or an inbox folder path. */
+ *  Accepts a project slug (→ inbox/<slug>) or an inbox folder path. */
 export const inboxNotes = (slugOrDir) => {
-  const dir = path.isAbsolute(slugOrDir) ? slugOrDir : path.join(ROOT, "00_INBOX", slugOrDir);
+  const dir = path.isAbsolute(slugOrDir) ? slugOrDir : path.join(INBOX, slugOrDir);
   if (!fs.existsSync(dir)) return "";
   return fs
     .readdirSync(dir)

@@ -52,7 +52,7 @@ const lines = [
   ...slugs.map((s, i) => `import p${i} from "../projects/${s}/brief.json";`),
   ...slugs.map((s, i) => (withVo.has(s) ? `import v${i} from "../projects/${s}/voiceover.json";` : "")).filter(Boolean),
   "",
-  "export type Brief = { template: string; formats: FormatKey[]; captions?: boolean; props: unknown };",
+  "export type Brief = { template: string; formats: FormatKey[]; compositionIdPrefix?: string; captions?: boolean; props: unknown };",
   "export type Voiceover = { lines: { scene: string; text: string }[]; scenes?: { scene: string }[] };",
   "",
   "export const PROJECTS: { slug: string; brief: Brief; voiceover?: Voiceover }[] = [",

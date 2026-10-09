@@ -1,0 +1,43 @@
+{
+  "template": "GoLiveFast",
+  "compositionIdPrefix": "GoLiveFast",
+  "formats": ["16x9", "9x16", "1x1", "4x5"],
+  "props": {
+    "campaign": "Automatika — Go Live Fast",
+    "url": "automatika.ph",
+    "voiceoverAsset": "projects/automatika-go-live-fast/audio/go_live_fast_voiceover.mp3",
+    "hook": {
+      "meterLabel": "DIY PANCAKE SETUP",
+      "stalled": "3+ WEEKS STALLED",
+      "question": "Weeks of setup?",
+      "badge": "GO-LIVE IN DAYS, NOT MONTHS"
+    },
+    "implementor": {
+      "badge": "OFFICIAL IMPLEMENTATION PARTNER",
+      "struck": "TRIAL-AND-ERROR",
+      "steps": ["BUILD", "WIRE", "TEST", "LAUNCH"],
+      "ready": "100% READY"
+    },
+    "niches": [
+      { "title": "E-Commerce & Fashion", "tag": "E-comm Live", "icon": "bag" },
+      { "title": "Fine Jewelry & Luxury", "tag": "Jewelry Live", "icon": "gem" },
+      { "title": "Solar & Home Contractors", "tag": "Solar Live", "icon": "sun" },
+      { "title": "Services & Education", "tag": "Turnkey", "icon": "cap" }
+    ],
+    "nicheHeadline": "Any niche. Ready.",
+    "modules": [
+      { "name": "Pancake CRM", "logo": "crm" },
+      { "name": "Webcake funnels", "logo": "webcake" },
+      { "name": "Botcake AI", "logo": "botcake" },
+      { "name": "POS sync", "logo": "pos" }
+    ],
+    "allLive": "ALL SYSTEMS LIVE",
+    "cta": {
+      "headline": "Launch Fast.",
+      "headlineAccent": "Scale Without The Wait.",
+      "sub": "CRM · Webcake · Botcake AI · POS · staff training — done for you",
+      "comment": "Comment 'LAUNCH'",
+      "booking": "Book Quick Onboarding"
+    }
+  }
+}

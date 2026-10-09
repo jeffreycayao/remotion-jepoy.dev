@@ -1,0 +1,69 @@
+{
+  "template": "PersonalAd",
+  "compositionIdPrefix": "PersonalAd",
+  "formats": ["16x9", "9x16", "1x1", "4x5"],
+  "props": {
+    "campaign": "Automatika Personal Ad",
+    "voiceoverAsset": "projects/automatika-personal-ad/audio/voiceover.mp3",
+    "partnerBadge": "OFFICIAL PARTNER: PANCAKE PHILIPPINES",
+    "hookBadge": "🛑 WAIT! BUSINESS OWNER KA BA?",
+    "hookQuestion": "Negosyo mo pa ba ang pinapatakbo mo?",
+    "frustration": {
+      "errors": ["Stock Mismatch: -14", "Broken Webhook"],
+      "chat": "Boss paano gamitin 'to?",
+      "lostTime": "4.5 hrs/day"
+    },
+    "pillars": [
+      { "name": "Pancake CRM", "detail": "Customer operations", "logo": "projects/automatika-personal-ad/logos/logo-crm.webp" },
+      { "name": "Webcake", "detail": "Conversion pages", "logo": "projects/automatika-personal-ad/logos/logo-landing-v3.webp" },
+      { "name": "Botcake AI", "detail": "Always-on conversations", "logo": "projects/automatika-personal-ad/logos/botcake-logo-2025.svg" },
+      { "name": "POS", "detail": "Orders and inventory", "logo": "projects/automatika-personal-ad/logos/logo-pos.webp" }
+    ],
+    "assuranceBadges": ["Zero Tech Debt", "Auto-Sync", "Staff Trained"],
+    "training": {
+      "headline": "Your team + AI, working together.",
+      "body": "Setup, integration, and staff enablement by Automatika.",
+      "status": "100% Team Onboarded",
+      "maintenance": "Zero Maintenance"
+    },
+    "cta": {
+      "headline": "Focus On Growth. We Run The Tech.",
+      "comment": "Comment 'OPS'",
+      "booking": "Book Onboarding",
+      "url": "automatika.ph"
+    },
+    "illustrativeNote": "Illustrative interface scenario",
+    "scenes": [
+      {
+        "startFrame": 0,
+        "endFrame": 240,
+        "title": "Pattern interrupt",
+        "spoken": "Wait! Business owner ka ba? Tanong ko lang: Negosyo mo pa ba ang pinapatakbo mo... o ikaw na lang ang tagapag-ayos ng sirang tools at chatbot araw-araw?"
+      },
+      {
+        "startFrame": 240,
+        "endFrame": 540,
+        "title": "Founder frustration",
+        "spoken": "Imbes na benta at fulfillment ang asikasuhin, nauubos ang oras mo sa magulong inventory at staff na laging nalilito sa system."
+      },
+      {
+        "startFrame": 540,
+        "endFrame": 870,
+        "title": "Pancake ecosystem setup",
+        "spoken": "Pahinga ka na diyan. As an Official Partner of Pancake Philippines, kami sa Automatika ang magse-set up ng lahat—CRM, Webcake, Botcake AI, at POS mo."
+      },
+      {
+        "startFrame": 870,
+        "endFrame": 1140,
+        "title": "Staff enablement",
+        "spoken": "Ite-train pa namin ang team mo to work hand-in-hand with AI. Para makatutok ka sa totoong operasyon, hindi sa maintenance."
+      },
+      {
+        "startFrame": 1140,
+        "endFrame": 1350,
+        "title": "Dual CTA",
+        "spoken": "Bawiin mo na ang oras mo. Comment 'OPS' o i-click ang link to book your onboarding today!"
+      }
+    ]
+  }
+}

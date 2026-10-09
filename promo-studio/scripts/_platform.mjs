@@ -10,10 +10,18 @@ export const IS_MAC = process.platform === "darwin";
 export const STUDIO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const ROOT = path.resolve(STUDIO, "..");
 export const TOOLS = path.join(ROOT, "tools");
+// The Remotion project is self-contained: source media stays in inbox/, prepared
+// media in public/, and generated files in out/. Never derive these from cwd.
+export const INBOX = path.join(STUDIO, "inbox");
+export const OUT = path.join(STUDIO, "out");
+export const RENDERS = path.join(OUT, "renders");
+export const DELIVERY = path.join(OUT, "delivery");
+export const ARCHIVE = path.join(OUT, "archive");
+export const STUDIO_PORT = 3100;
 export const VENV_PY = path.join(TOOLS, ".venv", IS_WIN ? "Scripts/python.exe" : "bin/python");
 
-/** Identifies the OS/CPU that node_modules + venv were installed for. */
-export const PLATFORM_ID = `${process.platform}-${os.arch()}`;
+/** Reinstall native Node packages when the OS, CPU, or Node ABI changes. */
+export const PLATFORM_ID = `${process.platform}-${os.arch()}-abi${process.versions.modules}`;
 export const MARKER = path.join(STUDIO, "node_modules", ".promo-platform");
 
 export const c = {
@@ -37,6 +45,14 @@ export const c = {
  */
 export const resolveCommand = (cmd) => {
   if (!IS_WIN) return { file: cmd, prefix: [] };
+  // Setup invokes the Python venv by its absolute executable path. Do not
+  // reinterpret that path as a PATH command or pass it through cmd.exe.
+  if (path.isAbsolute(cmd)) {
+    if (!fs.existsSync(cmd)) return null;
+    if (/\.(exe|com)$/i.test(cmd)) return { file: cmd, prefix: [] };
+    if (/\.(mjs|cjs|js)$/i.test(cmd)) return { file: process.execPath, prefix: [cmd] };
+    return null;
+  }
   if (cmd === "node") return { file: process.execPath, prefix: [] };
   if (cmd === "npm" || cmd === "npx") {
     const cli = path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", `${cmd}-cli.js`);

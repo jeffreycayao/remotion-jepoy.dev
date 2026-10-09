@@ -1,13 +1,13 @@
 // AI visual QA: renders a still from the middle of every scene in every format, then has the AI
 // review them like a senior motion designer would before a client delivery.
 //   npm run ai -- qa <slug> [--formats 9x16,1x1]
-// Output: 20_RENDERS/<slug>/_qa/<timestamp>/  (frames + report.md)
+// Output: out/renders/<slug>/_qa/<timestamp>/  (frames + report.md)
 import { bundle } from "@remotion/bundler";
 import { renderStill, selectComposition } from "@remotion/renderer";
 import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { c, ROOT, STUDIO } from "../_platform.mjs";
+import { c, RENDERS, STUDIO } from "../_platform.mjs";
 import { imageBlock, readBrief, sceneList, structured, textBlock } from "./core.mjs";
 
 export const qaSchema = z.object({
@@ -36,14 +36,14 @@ export const renderQaFrames = async (slug, brief, formats) => {
   const fmts = brief.formats.filter((f) => !formats || formats.includes(f));
   const scenes = sceneList(brief.props);
   const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const outDir = path.join(ROOT, "20_RENDERS", slug, "_qa", stamp);
+  const outDir = path.join(RENDERS, slug, "_qa", stamp);
   fs.mkdirSync(outDir, { recursive: true });
 
   console.log(c.dim(`  Rendering ${fmts.length * scenes.length} QA frames…`));
-  const serveUrl = await bundle({ entryPoint: path.join(STUDIO, "src", "index.ts") });
+  const serveUrl = await bundle({ entryPoint: path.join(STUDIO, "src", "index.ts"), publicDir: path.join(STUDIO, "public") });
   const frames = [];
   for (const fmt of fmts) {
-    const composition = await selectComposition({ serveUrl, id: `${slug}-${fmt}`, inputProps: brief.props });
+    const composition = await selectComposition({ serveUrl, id: `${brief.compositionIdPrefix ?? slug}-${fmt}`, inputProps: brief.props });
     for (const s of scenes) {
       const frame = Math.min(composition.durationInFrames - 1, s.start + Math.round(s.frames * 0.7));
       const file = path.join(outDir, `${fmt}_${s.key}.jpg`);
@@ -90,7 +90,7 @@ export const writeQa = (brief, qa, outDir) => {
     "Frames reviewed are in this folder.",
   ];
   fs.writeFileSync(path.join(outDir, "report.md"), md.join("\n") + "\n");
-  console.log(c.green(`\n  ✓ Report: ${path.relative(ROOT, path.join(outDir, "report.md"))}`));
+  console.log(c.green(`\n  ✓ Report: ${path.relative(STUDIO, path.join(outDir, "report.md"))}`));
   return qa;
 };
 

@@ -1,6 +1,6 @@
-// Inbox autopilot: drop an app's files into a sub-folder of 00_INBOX and pre-production runs by itself.
+// Inbox autopilot: drop an app's files into a sub-folder of inbox and pre-production runs by itself.
 //
-//   npm run autopilot                      watch 00_INBOX (Ctrl+C to stop)
+//   npm run autopilot                      watch inbox (Ctrl+C to stop)
 //   npm run autopilot -- --once            process every new/changed folder once, then exit
 //   npm run autopilot -- "<folder>" [--force]   process one inbox folder now (--force also redoes a hand-edited brief)
 //
@@ -10,9 +10,8 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { c, ROOT, run, STUDIO } from "./_platform.mjs";
+import { c, INBOX, RENDERS, run, STUDIO } from "./_platform.mjs";
 
-const INBOX = path.join(ROOT, "00_INBOX");
 // PROMO_AUTOPILOT_CONFIG points at an alternative settings file (e.g. a "brief only" profile).
 const config = JSON.parse(fs.readFileSync(process.env.PROMO_AUTOPILOT_CONFIG || path.join(STUDIO, "autopilot.config.json"), "utf8"));
 const { runJSON, PROVIDERS, isAvailable } = await import("./ai/providers.mjs");
@@ -207,7 +206,7 @@ const processFolder = async (folder, { force = false } = {}) => {
     log(c.dim(`    Rendering ${formats.join(", ")} draft…`));
     const r = run("node", ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", path.join(STUDIO, "scripts", "render.mjs"), slug, "--draft", "--formats", formats.join(",")], { quiet: true });
     if (r.ok) {
-      report.draft = path.join("20_RENDERS", slug, "_drafts");
+      report.draft = path.relative(STUDIO, path.join(RENDERS, slug, "_drafts")).split(path.sep).join("/");
       step("Draft render", "done", `${formats.join(", ")} → ${report.draft}`);
     } else step("Draft render", "failed", (r.stderr || r.stdout).trim().split("\n").pop());
   }
@@ -227,7 +226,7 @@ const processFolder = async (folder, { force = false } = {}) => {
         prompt: `Frames, in order:\n${frames.map((f, i) => `${i + 1}. ${f.label} — ${path.basename(f.file)}`).join("\n")}\n\n${qaMod.qaReferenceText(brief)}`,
       });
       const qa = qaMod.writeQa(brief, data, outDir);
-      report.qa = { score: qa.score, verdict: qa.verdict, high: qa.issues.filter((i) => i.severity === "high").map((i) => i.problem), report: path.relative(ROOT, path.join(outDir, "report.md")) };
+      report.qa = { score: qa.score, verdict: qa.verdict, high: qa.issues.filter((i) => i.severity === "high").map((i) => i.problem), report: path.relative(STUDIO, path.join(outDir, "report.md")).split(path.sep).join("/") };
       step("Visual QA", "done", `${qa.score}/10, ${qa.verdict} — by ${PROVIDERS[provider].name}`);
     } catch (err) {
       step("Visual QA", "failed", err.message);
@@ -242,7 +241,7 @@ const finish = (slug, state, report, t0, folder) => {
   const md = [
     `# Autopilot report — ${report.brief?.appName ?? slug}`,
     "",
-    `Inbox folder \`00_INBOX/${folder}\` → project \`${slug}\` · ${new Date().toLocaleString()} · ${report.seconds}s`,
+    `Inbox folder \`inbox/${folder}\` → project \`${slug}\` · ${new Date().toLocaleString()} · ${report.seconds}s`,
     "",
     "| Step | Result | Detail |",
     "|---|---|---|",
@@ -253,7 +252,7 @@ const finish = (slug, state, report, t0, folder) => {
     "## Next",
     "",
     "1. Review `brief.json`, `hooks.md` and `voiceover.md` in this folder.",
-    `2. Watch the draft in \`${report.draft ?? `20_RENDERS/${slug}/_drafts`}\` or open Studio (launcher 1).`,
+    `2. Watch the draft in \`${report.draft ?? `out/renders/${slug}/_drafts`}\` or open Studio (launcher 1).`,
     `3. When it's right: final render (launcher 4) and deliver (launcher 5).`,
   ].filter((l) => l !== "");
   fs.writeFileSync(path.join(STUDIO, "projects", slug, "autopilot-report.md"), md.join("\n") + "\n");
@@ -311,7 +310,7 @@ if (named.length) {
   header();
   for (const folder of named) {
     if (!fs.existsSync(path.join(INBOX, folder))) {
-      console.log(c.red(`  ✗ No folder 00_INBOX/${folder}`));
+      console.log(c.red(`  ✗ No folder inbox/${folder}`));
       continue;
     }
     await safeProcess(folder, { force });
@@ -322,7 +321,7 @@ if (named.length) {
 header();
 if (once) {
   const todo = inboxFolders().filter((f) => due(f));
-  if (!todo.length) log("Nothing new in 00_INBOX.");
+  if (!todo.length) log("Nothing new in inbox.");
   for (const folder of todo) await safeProcess(folder, { force });
   process.exit(0);
 }

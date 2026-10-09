@@ -1,0 +1,54 @@
+{
+  "template": "PancakeEcosystem",
+  "compositionIdPrefix": "PancakeAd",
+  "formats": ["16x9", "9x16", "1x1", "4x5"],
+  "props": {
+    "campaign": "Pancake-end-to-end",
+    "agency": "Automatika",
+    "partnerBadge": "OFFICIAL PARTNER: PANCAKE PHILIPPINES",
+    "voiceoverAsset": "projects/pancake-end-to-end/audio/pancake_ecosystem_ad_aligned.wav",
+    "scenes": [
+      {
+        "startFrame": 0,
+        "endFrame": 210,
+        "title": "Five channels. One overwhelmed team.",
+        "spoken": "Nalulunod ka ba sa sabay-sabay na inquiries, nananakaw na leads, at magulong stock sa iba't ibang channels?"
+      },
+      {
+        "startFrame": 210,
+        "endFrame": 510,
+        "title": "One inbox. Always on.",
+        "spoken": "I-automate ang buong negosyo gamit ang Pancake Ecosystem. Isang centralized inbox, twenty-four-seven Botcake A-I na sumasagot agad, at anti-theft protection laban sa mga competitor."
+      },
+      {
+        "startFrame": 510,
+        "endFrame": 780,
+        "title": "Every sale stays connected.",
+        "spoken": "Mula high-converting Web-cake funnels hanggang Pancake P-O-S na may instant courier waybills at customer C-R-M—konektado lahat."
+      },
+      {
+        "startFrame": 780,
+        "endFrame": 1050,
+        "title": "We'll set up the whole stack.",
+        "spoken": "Kami na ang bahala sa setup at team training mo. Comment 'PANCAKE' o i-click ang link para simulan ang on-boarding mo ngayon!"
+      }
+    ],
+    "channels": ["FB", "IG", "TikTok", "Shopee", "WhatsApp"],
+    "modules": ["Pancake App / Inbox", "Botcake AI", "Webcake", "Pancake POS", "Pancake CRM"],
+    "featureLabels": {
+      "inbox": "One inbox · anti-theft protection · in-chat orders",
+      "botcake": "24/7 AI · comment-to-DM · reactivation broadcasts",
+      "webcake": "Mobile funnels · Meta CAPI · TikTok Pixel",
+      "pos": "Live orders · stock sync · courier waybills",
+      "crm": "360° profiles · retention flows · repeat sales"
+    },
+    "couriers": ["J&T", "Ninja Van", "Flash", "Lalamove"],
+    "setupSteps": ["Setup", "Integration", "Staff training"],
+    "cta": {
+      "comment": "Comment 'PANCAKE'",
+      "booking": "Book Your Onboarding"
+    },
+    "illustrativeMetric": "+30% Lift",
+    "illustrativeNote": "Illustrative UI and metric"
+  }
+}

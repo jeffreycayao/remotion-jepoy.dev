@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -32,10 +33,13 @@ except ImportError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parent.parent
 STUDIO = ROOT / "promo-studio"
-INBOX = ROOT / "00_INBOX"
-RENDERS = ROOT / "20_RENDERS"
-DELIVERY = ROOT / "30_DELIVERY"
-ARCHIVE = ROOT / "90_ARCHIVE"
+INBOX = STUDIO / "inbox"
+RENDERS = STUDIO / "out" / "renders"
+DELIVERY = STUDIO / "out" / "delivery"
+ARCHIVE = STUDIO / "out" / "archive"
+# Existing external renders remain readable so older versions can still be delivered.
+# Nothing in this helper writes to the legacy production folders.
+LEGACY_RENDERS = ROOT / "20_RENDERS"
 
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".heic", ".bmp", ".tif", ".tiff"}
 AUDIO_EXT = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"}
@@ -73,6 +77,18 @@ def brief_path(slug: str) -> Path:
     return p
 
 
+def project_slug(value: str) -> str:
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", value):
+        raise argparse.ArgumentTypeError("project slug must be kebab-case (letters, digits, hyphens)")
+    return value
+
+
+def render_version(value: str) -> str:
+    if not re.fullmatch(r"v[0-9]{3}", value):
+        raise argparse.ArgumentTypeError("render version must look like v001")
+    return value
+
+
 def update_brief(slug: str, fn) -> None:
     p = brief_path(slug)
     data = json.loads(p.read_text(encoding="utf-8"))
@@ -82,11 +98,35 @@ def update_brief(slug: str, fn) -> None:
 
 
 def latest_version(slug: str) -> Path:
-    base = RENDERS / slug
-    versions = sorted(p for p in base.glob("v[0-9][0-9][0-9]") if p.is_dir()) if base.exists() else []
-    if not versions:
-        raise SystemExit(f"✗ No renders for '{slug}'. Run: npm run render -- {slug}")
-    return versions[-1]
+    for root in (RENDERS, LEGACY_RENDERS):
+        base = root / slug
+        versions = sorted(p for p in base.glob("v[0-9][0-9][0-9]") if p.is_dir()) if base.exists() else []
+        if versions:
+            return versions[-1]
+    raise SystemExit(f"✗ No renders for '{slug}'. Run: npm run render -- {slug}")
+
+
+def selected_version(slug: str, version: str | None) -> Path:
+    if version is None:
+        return latest_version(slug)
+    for root in (RENDERS, LEGACY_RENDERS):
+        candidate = root / slug / version
+        if candidate.is_dir():
+            return candidate
+    raise SystemExit(f"✗ No render version '{version}' for '{slug}'.")
+
+
+def reserve_delivery_dir(base: Path) -> Path:
+    """Create a new output folder without reusing a previous delivery."""
+    base.parent.mkdir(parents=True, exist_ok=True)
+    for index in range(1000):
+        candidate = base if index == 0 else base.with_name(f"{base.name}-{index + 1:02d}")
+        try:
+            candidate.mkdir()
+            return candidate
+        except FileExistsError:
+            continue
+    raise SystemExit(f"✗ Too many delivery folders for {base.name}.")
 
 
 def sha1(path: Path) -> str:
@@ -114,7 +154,7 @@ def cmd_doctor(_: argparse.Namespace) -> None:
     log(f"  ✓ python   {sys.version.split()[0]} ({sys.executable})")
     log(f"  {'✓' if (STUDIO / 'node_modules').exists() else '✗'} promo-studio/node_modules")
     for d in (INBOX, RENDERS, DELIVERY, ARCHIVE):
-        log(f"  {'✓' if d.exists() else '✗'} {d.name}/")
+        log(f"  {'✓' if d.exists() else '✗'} {d.relative_to(STUDIO)}/")
 
 
 def cmd_prep_screens(a: argparse.Namespace) -> None:
@@ -231,14 +271,14 @@ def make_contact_sheet(source: Path, out: Path, cols: int = 4, count: int = 12, 
 
 
 def cmd_deliver(a: argparse.Namespace) -> None:
-    """Platform-ready encodes + previews from a render version → 30_DELIVERY."""
-    src = RENDERS / a.slug / a.version if a.version else latest_version(a.slug)
+    """Platform-ready encodes + previews from an in-app or legacy render."""
+    src = selected_version(a.slug, a.version)
     videos = sorted(src.glob("*.mp4"))
     if not videos:
         raise SystemExit(f"✗ No .mp4 files in {src}")
-    dest = DELIVERY / a.slug / f"{src.name}_{datetime.now():%Y-%m-%d}"
-    (dest / "previews").mkdir(parents=True, exist_ok=True)
-    log(f"▸ Delivering {a.slug} {src.name} → {dest.relative_to(ROOT)}")
+    dest = reserve_delivery_dir(DELIVERY / a.slug / f"{src.name}_{datetime.now():%Y-%m-%d}")
+    (dest / "previews").mkdir()
+    log(f"▸ Delivering {a.slug} {src.name} → {dest.relative_to(STUDIO)}")
 
     manifest = {"slug": a.slug, "version": src.name, "created": datetime.now().isoformat(timespec="seconds"), "files": []}
     for v in videos:
@@ -338,23 +378,32 @@ def cmd_probe(a: argparse.Namespace) -> None:
 
 
 def cmd_archive(a: argparse.Namespace) -> None:
-    """Zip brief + public assets + renders + deliveries into 90_ARCHIVE (non-destructive)."""
+    """Zip an in-app project's raw material, brief, assets and outputs."""
     brief_path(a.slug)
-    ARCHIVE.mkdir(exist_ok=True)
-    out = ARCHIVE / f"{a.slug}_{datetime.now():%Y-%m-%d_%H%M}.zip"
+    ARCHIVE.mkdir(parents=True, exist_ok=True)
+    base = ARCHIVE / f"{a.slug}_{datetime.now():%Y-%m-%d_%H%M%S}.zip"
     sources = [
+        INBOX / a.slug,
         STUDIO / "projects" / a.slug,
         STUDIO / "public" / "projects" / a.slug,
         RENDERS / a.slug,
         DELIVERY / a.slug,
     ]
-    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        for base in sources:
-            if base.exists():
-                for f in base.rglob("*"):
-                    if f.is_file():
-                        z.write(f, f.relative_to(ROOT))
-    log(f"✓ Archived → {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB). Originals left in place.")
+    for index in range(1000):
+        out = base if index == 0 else base.with_name(f"{base.stem}-{index + 1:02d}{base.suffix}")
+        try:
+            with zipfile.ZipFile(out, "x", zipfile.ZIP_DEFLATED) as z:
+                for source in sources:
+                    if source.exists():
+                        for f in source.rglob("*"):
+                            if f.is_file():
+                                z.write(f, f.relative_to(STUDIO))
+            break
+        except FileExistsError:
+            continue
+    else:
+        raise SystemExit(f"✗ Too many archives for {a.slug}.")
+    log(f"✓ Archived → {out.relative_to(STUDIO)} ({out.stat().st_size / 1e6:.1f} MB). Originals left in place.")
 
 
 def main() -> None:
@@ -365,20 +414,20 @@ def main() -> None:
 
     sub.add_parser("doctor", help="check toolchain").set_defaults(fn=cmd_doctor)
 
-    s = sub.add_parser("prep-screens", help="normalize screenshots from 00_INBOX/<slug>")
-    s.add_argument("slug"); s.add_argument("--src"); s.add_argument("--apply", action="store_true")
+    s = sub.add_parser("prep-screens", help="normalize screenshots from inbox/<slug>")
+    s.add_argument("slug", type=project_slug); s.add_argument("--src"); s.add_argument("--apply", action="store_true")
     s.set_defaults(fn=cmd_prep_screens)
 
     s = sub.add_parser("prep-logo", help="trim + import a logo")
-    s.add_argument("slug"); s.add_argument("file"); s.add_argument("--apply", action="store_true")
+    s.add_argument("slug", type=project_slug); s.add_argument("file"); s.add_argument("--apply", action="store_true")
     s.set_defaults(fn=cmd_prep_logo)
 
     s = sub.add_parser("prep-audio", help="loudness-normalize a music bed")
-    s.add_argument("slug"); s.add_argument("file"); s.add_argument("--apply", action="store_true")
+    s.add_argument("slug", type=project_slug); s.add_argument("file"); s.add_argument("--apply", action="store_true")
     s.set_defaults(fn=cmd_prep_audio)
 
-    s = sub.add_parser("deliver", help="platform-ready encodes → 30_DELIVERY")
-    s.add_argument("slug"); s.add_argument("--version")
+    s = sub.add_parser("deliver", help="platform-ready encodes → out/delivery")
+    s.add_argument("slug", type=project_slug); s.add_argument("--version", type=render_version)
     s.set_defaults(fn=cmd_deliver)
 
     s = sub.add_parser("gif", help="high-quality GIF from a video")
@@ -396,8 +445,8 @@ def main() -> None:
     s = sub.add_parser("probe", help="show media info")
     s.add_argument("file"); s.set_defaults(fn=cmd_probe)
 
-    s = sub.add_parser("archive", help="zip a project into 90_ARCHIVE")
-    s.add_argument("slug"); s.set_defaults(fn=cmd_archive)
+    s = sub.add_parser("archive", help="zip a project into out/archive")
+    s.add_argument("slug", type=project_slug); s.set_defaults(fn=cmd_archive)
 
     a = p.parse_args()
     a.fn(a)

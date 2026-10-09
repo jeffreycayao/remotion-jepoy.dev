@@ -1,0 +1,28 @@
+THE HAPPY FREELANCERS — BACK-TO-BACK FREE WEBINARS
+35 seconds / 1050 frames / 30 FPS
+Timing note: this unchanged 106-word script needs approximately 182 words/minute
+to fit 35 seconds; 128 words/minute would take approximately 50 seconds.
+The supplied ElevenLabs MP3 measures 37.2 seconds. Its five phrases are trimmed
+at measured silence gaps and each is retimed to the corresponding 8/8/8/6/5
+second scene, preserving all spoken words and landing the VO cues on each cut.
+
+0:00–0:08  [frames 0–239]  Diretsong maangas, may gulat
+Gusto mo bang sirain ang graphic design career mo in just five seconds? Isang maling habit o palpak na layout lang, ekis ka na agad sa client!
+
+0:08–0:16  [frames 240–479]  Mataas ang enerhiya
+Kaya wag magpahuli! Ngayong October 8, sasabihin ni Coach Ali kung ano ang mga fatal mistakes na sumisira sa gawa mo bago ka pa ma-hire.
+
+0:16–0:24  [frames 480–719]  Inspirado at klaro
+At sa October 9 naman, tutulungan ka ni Coach Mary Amorin i-plano ang first seven days of content mo para maging certified in-demand Social Media Manager.
+
+0:24–0:30  [frames 720–899]  Matinding FOMO
+Two nights. Two industry coaches. One hundred percent FREE—pero mabilis mapuno ang Zoom slots!
+
+0:30–0:35  [frames 900–1049]  Madiin na CTA
+I-click na ang registration link sa caption bago ka maubusan ng slot. Register now!
+
+The supplied original MP3 is preserved in
+00_INBOX/the-happy-freelancers-webinars/. Its prepared render copy is
+promo-studio/public/projects/the-happy-freelancers-webinars/audio/webinar_fomo_vo.mp3.
+The video also accepts the requested public-root path
+promo-studio/public/webinar_fomo_vo.mp3.

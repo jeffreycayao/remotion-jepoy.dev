@@ -9,9 +9,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { c, listProjects, resolveCommand, ROOT, STUDIO } from "../_platform.mjs";
-
-const INBOX = path.join(ROOT, "00_INBOX");
+import { c, INBOX, listProjects, resolveCommand, ROOT, STUDIO } from "../_platform.mjs";
 
 /** Formats straight from src/lib/layout.ts so the prompt never drifts from the template. */
 const formats = () => {
@@ -31,7 +29,7 @@ videos with Remotion and want help building the pieces: brief.json content, bran
 Project facts (CLAUDE.md has the full rules):
 - A project = promo-studio/projects/<slug>/brief.json. "props" must match src/templates/AppPromo/schema.ts —
   read it before writing. Text in [square brackets] is starter placeholder copy from \`npm run new\` — replace
-  all of it (final renders refuse briefs that still contain any). Raw client files live in 00_INBOX/<slug>/ (read-only); prepared assets go in
+  all of it (final renders refuse briefs that still contain any). Raw client files live in promo-studio/inbox/<slug>/ (read-only); prepared assets go in
   promo-studio/public/projects/<slug>/ via \`npm run tools -- prep-screens|prep-logo|prep-audio <slug> … --apply\`.
 - New project: \`npm run new -- <slug> "<App Name>"\` (from promo-studio/).
 - Formats (the "formats" array in brief.json): ${formats().join("; ")}.
@@ -41,11 +39,11 @@ Project facts (CLAUDE.md has the full rules):
   Never invent stats or claims — ask the owner for real numbers.
 - After editing a brief run \`npm run lint\` (from promo-studio/) and show a preview with
   \`npm run frames -- <slug> 9x16 60,150,300\` (stills in promo-studio/out/frames/ — read them to check the look).
-- File placement (CLAUDE.md "Where every file goes"): copy the owner's original files into 00_INBOX/<slug>/ first;
-  videos only via \`npm run draft|render\` (→ 20_RENDERS), never \`npx remotion render\`. A bespoke design is a template in
+- File placement (CLAUDE.md "Where every file goes"): copy the owner's original files into promo-studio/inbox/<slug>/ first;
+  videos only via \`npm run draft|render\` (→ promo-studio/out/renders), never \`npx remotion render\`. A bespoke design is a template in
   src/templates/<Name>/ + an entry in src/templates/registry.ts + its own project brief {"template": "<Name>"} —
   never hard-coded <Composition>s in Root.tsx.
-- Never touch 20_RENDERS/, 30_DELIVERY/, 90_ARCHIVE/ by hand; only render finals when asked.
+- Never touch promo-studio/out/renders/, promo-studio/out/delivery/, or promo-studio/out/archive/ by hand; only render finals when asked.
 - The owner may not be a developer: ask one question at a time, offer sensible defaults, and summarise what
   you changed at the end.`;
 
@@ -56,7 +54,7 @@ const projectContext = (slug) => {
   return `
 Current focus: project "${slug}".
 - Brief: promo-studio/projects/${slug}/brief.json ${fs.existsSync(brief) ? "(exists)" : "(missing — offer to create it)"}
-- Inbox 00_INBOX/${slug}/: ${inbox.length ? inbox.join(", ") : "empty"}
+- Inbox promo-studio/inbox/${slug}/: ${inbox.length ? inbox.join(", ") : "empty"}
 - Prepared assets: ${assets.length ? assets.join(", ") : "none yet"}`;
 };
 

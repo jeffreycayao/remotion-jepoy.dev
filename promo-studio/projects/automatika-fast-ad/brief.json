@@ -1,0 +1,61 @@
+{
+  "template": "FastAd",
+  "compositionIdPrefix": "FastAd",
+  "formats": ["16x9", "9x16", "1x1", "4x5"],
+  "props": {
+    "campaign": "Automatika Fast Ad",
+    "voiceoverAsset": "projects/automatika-fast-ad/audio/voiceover.mp3",
+    "logoAsset": "projects/automatika-fast-ad/logos/automatika-logo.png",
+    "markAsset": "projects/automatika-fast-ad/logos/automatika-mark.png",
+    "partnerBadge": "OFFICIAL PARTNER: PANCAKE PHILIPPINES",
+    "engineHeadline": "FOUR TOOLS. ONE ENGINE.",
+    "trainingLine": "We deploy the stack and train your team with AI co-pilots.",
+    "hookBadge": "🛑 NEGOSYANTE KA, HINDI I.T. SUPPORT!",
+    "hookQuestion": "Bakit ikaw pa ang nag-aayos ng tools?",
+    "pains": [
+      { "label": "LEADS GOING COLD", "detail": "Waiting 2h · unanswered inquiries" },
+      { "label": "ORDER CANCELED", "detail": "-24 items · manual inventory desync" },
+      { "label": "STAFF NEEDS HELP", "detail": "Boss, paano po 'to gamitin ulit?" }
+    ],
+    "pillars": [
+      { "name": "Pancake CRM", "detail": "Customer operations", "logo": "projects/automatika-fast-ad/logos/logo-crm.webp" },
+      { "name": "Botcake AI", "detail": "Conversation co-pilot", "logo": "projects/automatika-fast-ad/logos/botcake-logo-2025.svg" },
+      { "name": "Webcake", "detail": "Conversion pages", "logo": "projects/automatika-fast-ad/logos/logo-landing-v3.webp" },
+      { "name": "POS", "detail": "Orders and inventory", "logo": "projects/automatika-fast-ad/logos/logo-pos.webp" }
+    ],
+    "statusBadges": ["Auto-Routed", "Zero Desync", "Staff Trained"],
+    "cta": {
+      "headline": "Focus On Scaling. We Run The Tech.",
+      "comment": "Comment 'OPS'",
+      "booking": "Book Onboarding",
+      "url": "automatika.ph"
+    },
+    "illustrativeNote": "Illustrative interface scenario",
+    "scenes": [
+      {
+        "startFrame": 0,
+        "endFrame": 210,
+        "title": "Accidental IT support hook",
+        "spoken": "Teka! Negosyante ka, hindi I-T support. Bakit ikaw ang nagpupuyat kakaayos ng sirang chatbot, magulong inventory, at tambak na inquiries?"
+      },
+      {
+        "startFrame": 210,
+        "endFrame": 480,
+        "title": "Rapid-fire operational leaks",
+        "spoken": "Nalulugi ka habang lumalamig ang leads mo, naca-cancel ang orders sa maling stock, at laging litong-lito ang staff mo."
+      },
+      {
+        "startFrame": 480,
+        "endFrame": 780,
+        "title": "Pancake ecosystem takeover",
+        "spoken": "Ipasa mo na sa amin 'yan! As an Official Partner of Pancake Philippines, Automatika ang magde-deploy ng buong setup mo—Pancake C-R-M, Botcake, Web-cake, at P-O-S, kasama ang training ng team mo."
+      },
+      {
+        "startFrame": 780,
+        "endFrame": 1050,
+        "title": "Dual CTA",
+        "spoken": "Bawiin mo na ang oras at benta mo. Comment 'O-P-S' o i-click ang link to book your on-boarding today!"
+      }
+    ]
+  }
+}

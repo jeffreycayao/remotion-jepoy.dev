@@ -127,7 +127,7 @@ section > header { display: grid; gap: 10px; }
 .station .bar { height: 2px; background: var(--olive); flex: 1; }
 .station:last-child .bar { background: transparent; }
 .station.focus .dot { background: var(--lime); }
-.station .folder { font: 600 13px var(--font-code); }
+.station .folder { font: 600 13px var(--font-code); overflow-wrap: anywhere; }
 .station h3 { font-size: 18px; }
 .station p { font-size: 14px; color: var(--ink-soft); }
 
@@ -235,9 +235,9 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
     <aside class="quick" aria-label="Quick start">
       <h3>Quick start</h3>
       <ol>
-        <li><p><b>Install Node.js 18+</b>The only thing you install yourself.</p></li>
+        <li><p><b>Install Node.js 22.18+</b>The only thing you install yourself.</p></li>
         <li><p><b>Run setup once</b><span class="mono">SETUP.bat</span> on Windows, <span class="mono">bash setup.sh</span> on Mac/Linux.</p></li>
-        <li><p><b>Drop files, press <span class="mono">w</span></b>Put a folder per app in <span class="mono">00_INBOX</span>. The autopilot handles pre-production.</p></li>
+        <li><p><b>Drop files, press <span class="mono">w</span></b>Put a folder per app in <span class="mono">promo-studio/inbox/</span>. The autopilot handles pre-production.</p></li>
       </ol>
     </aside>
   </div>
@@ -258,7 +258,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
 
     <div class="os-pane" id="pane-win" role="tabpanel" aria-labelledby="tab-win">
       <div class="grid-2">
-        <div class="card"><h3>1 · Get Node.js</h3><p>Skip this if <code>node -v</code> already prints 18 or higher.</p></div>
+        <div class="card"><h3>1 · Get Node.js</h3><p>Skip this if <code>node -v</code> already prints 22.18 or higher.</p></div>
         <div class="card"><h3>2 · Setup, then launch</h3><p>Double-click <b>SETUP.bat</b> once. After that, double-click <b>PROMO STUDIO.bat</b> whenever you want to work.</p></div>
       </div>
       <div class="term"><pre><span class="p">&gt; </span>winget install OpenJS.NodeJS.LTS
@@ -280,7 +280,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
 
     <div class="os-pane" id="pane-linux" role="tabpanel" aria-labelledby="tab-linux" hidden>
       <div class="grid-2">
-        <div class="card"><h3>1 · Get Node.js</h3><p>Install Node 18+ from nodejs.org or your version manager. Python and FFmpeg come from your package manager.</p></div>
+        <div class="card"><h3>1 · Get Node.js</h3><p>Install Node 22.18+ from nodejs.org or your version manager. Python and FFmpeg come from your package manager.</p></div>
         <div class="card"><h3>2 · Setup, then launch</h3><p>If the rendering browser needs extra system libraries, setup prints the exact <code>apt</code> line to run.</p></div>
       </div>
       <div class="term"><pre><span class="p">$ </span>sudo apt install python3 python3-venv ffmpeg chromium
@@ -290,10 +290,11 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
     </div>
 
     <div class="grid-3">
-      <div class="card"><h3>Studio as an app</h3><p>Menu <kbd>1</kbd> opens the editor in its own window using Edge, Chrome, Brave or Chromium. When you close the window, Studio stops too.</p></div>
+      <div class="card"><h3>Studio as an app</h3><p>Menu <kbd>1</kbd> opens the editor at <code>localhost:3100</code> in its own window using Edge, Chrome, Brave or Chromium. When you close the window, Studio stops too.</p></div>
       <div class="card"><h3>Desktop shortcut</h3><p>Menu <kbd>d</kbd> adds a shortcut with the app icon. One click opens straight into the Studio window.</p></div>
-      <div class="card"><h3>Moving computers?</h3><p>Copy the whole folder and run setup again. It rebuilds the parts that are specific to each operating system.</p></div>
+      <div class="card"><h3>Moving computers?</h3><p>Copy the whole folder, including <code>promo-studio/inbox/</code> and <code>promo-studio/out/</code>, then run setup again. It rebuilds the parts specific to each operating system.</p></div>
     </div>
+    <p class="note">A Git clone excludes ignored original media and generated outputs. Copy <code>promo-studio/inbox/</code> and <code>promo-studio/out/</code> separately if you need those files on the new machine. The old numbered media folders in the workspace root are historical and stay untouched.</p>
   </section>
 
   <!-- ───────────────────────── PIPELINE ───────────────────────── -->
@@ -301,12 +302,12 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
     <header>
       <span class="eyebrow">How work flows</span>
       <h2>Five stations, left to right</h2>
-      <p class="lead">Each folder holds one stage of the work. Files only move forward, and nothing in a later station is overwritten. Every render gets a new version number.</p>
+      <p class="lead">All paths below are inside <code>promo-studio/</code>. Each folder holds one stage of the work. Files only move forward, and nothing in a later station is overwritten. Every render gets a new version number.</p>
     </header>
     <div class="rail" role="list">
       <div class="station" role="listitem">
         <div class="node"><span class="dot"></span><span class="bar"></span></div>
-        <span class="folder">00_INBOX/&lt;app&gt;/</span>
+        <span class="folder">inbox/&lt;app&gt;/</span>
         <h3>Intake</h3>
         <p>Raw client files: screenshots, logo, music, <code>notes.txt</code>. These are never edited.</p>
       </div>
@@ -318,23 +319,24 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
       </div>
       <div class="station" role="listitem">
         <div class="node"><span class="dot"></span><span class="bar"></span></div>
-        <span class="folder">20_RENDERS/&lt;app&gt;/v001</span>
+        <span class="folder">out/renders/&lt;app&gt;/v001</span>
         <h3>Render</h3>
         <p>Master MP4s, thumbnails, and a frozen copy of the brief used. <code>_drafts/</code> holds quick previews.</p>
       </div>
       <div class="station" role="listitem">
         <div class="node"><span class="dot"></span><span class="bar"></span></div>
-        <span class="folder">30_DELIVERY/&lt;app&gt;/</span>
+        <span class="folder">out/delivery/&lt;app&gt;/</span>
         <h3>Deliver</h3>
         <p>Upload-ready MP4s at −14 LUFS with fast-start, GIF previews, a contact sheet and a manifest.</p>
       </div>
       <div class="station" role="listitem">
         <div class="node"><span class="dot"></span><span class="bar"></span></div>
-        <span class="folder">90_ARCHIVE/</span>
+        <span class="folder">out/archive/</span>
         <h3>Archive</h3>
         <p>A zip of the brief, assets, renders and deliveries. The originals stay where they are.</p>
       </div>
     </div>
+    <p class="note">Prepared media lives in <code>promo-studio/public/projects/&lt;app&gt;/</code>; preview stills go to <code>promo-studio/out/frames/</code>. Visual QA goes under <code>promo-studio/out/renders/&lt;app&gt;/_qa/</code>.</p>
   </section>
 
   <!-- ───────────────────────── AUTOPILOT ───────────────────────── -->
@@ -342,7 +344,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
     <header>
       <span class="eyebrow">Autopilot · launcher w</span>
       <h2>Drop the files. <span class="mark">Pre-production runs itself.</span></h2>
-      <p class="lead">Make a folder per app in <code>00_INBOX</code> and drop in the screenshots, a logo and a <code>notes.txt</code>. The autopilot waits until copying finishes, then works through every step below on its own. A typical app takes about 2–3 minutes.</p>
+      <p class="lead">Make a folder per app in <code>promo-studio/inbox/</code> and drop in the screenshots, a logo and a <code>notes.txt</code>. The autopilot waits until copying finishes, then works through every step below on its own. A typical app takes about 2–3 minutes.</p>
     </header>
     <div class="flow" aria-label="Autopilot steps">
       <span>Create project</span><i>→</i><span>Prep assets</span><i>→</i><span>Logo colors</span><i>→</i><span class="ai">AI brief</span><i>→</i><span class="ai">Hook variants</span><i>→</i><span class="ai">Voiceover</span><i>→</i><span>Vertical draft</span><i>→</i><span class="ai">Visual QA</span><i>→</i><span>Report</span>
@@ -361,7 +363,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
         <h3>What you get back</h3>
         <ul>
           <li><code>brief.json</code>, <code>hooks.md</code> and <code>voiceover.md</code> in <code>promo-studio/projects/&lt;app&gt;/</code></li>
-          <li>A vertical draft video in <code>20_RENDERS/&lt;app&gt;/_drafts</code></li>
+          <li>A vertical draft video in <code>promo-studio/out/renders/&lt;app&gt;/_drafts/</code></li>
           <li>A QA score with fixes, and <code>autopilot-report.md</code> listing what to check</li>
           <li>Edit a brief by hand and later runs leave it alone, unless you choose <kbd>w</kbd> → <kbd>3</kbd></li>
         </ul>
@@ -394,7 +396,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
       </div></li>
       <li><div class="body">
         <h3>Drop the client files in the inbox</h3>
-        <p>Put screenshots in <code>00_INBOX/fit-tracker/</code> and name them so they sort in feature order (<code>01-home.png</code>, <code>02-plans.png</code>…). Any file with <b>logo</b> in its name is used as the logo. A <code>notes.txt</code> with facts about the app gives the AI real material to write from.</p>
+        <p>Put screenshots in <code>promo-studio/inbox/fit-tracker/</code> and name them so they sort in feature order (<code>01-home.png</code>, <code>02-plans.png</code>…). Any file with <b>logo</b> in its name is used as the logo. A <code>notes.txt</code> with facts about the app gives the AI real material to write from.</p>
       </div></li>
       <li><div class="body">
         <h3>Prepare the assets, or let AI draft everything</h3>
@@ -414,13 +416,13 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
       </div></li>
       <li><div class="body">
         <h3>Draft, then final render</h3>
-        <p>A <b>draft</b> (<kbd>3</kbd>) renders at half resolution into <code>_drafts/</code>, so you can review it quickly. A <b>final</b> render (<kbd>4</kbd>) writes full-quality masters into a new <code>v001</code>, <code>v002</code>… folder, never over an old one.</p>
+        <p>A <b>draft</b> (<kbd>3</kbd>) renders at half resolution into <code>promo-studio/out/renders/fit-tracker/_drafts/</code>, so you can review it quickly. A <b>final</b> render (<kbd>4</kbd>) writes full-quality masters into a new <code>v001</code>, <code>v002</code>… folder under <code>promo-studio/out/renders/fit-tracker/</code>, never over an old one.</p>
         <div class="term"><pre><span class="p">$ </span>npm run draft -- fit-tracker --formats 9x16
 <span class="p">$ </span>npm run render -- fit-tracker</pre><button class="copy">Copy</button></div>
       </div></li>
       <li><div class="body">
         <h3>Deliver and archive</h3>
-        <p><kbd>5</kbd> turns the latest version into upload-ready files in <code>30_DELIVERY</code>. When the project is done, <kbd>7</kbd> zips everything into <code>90_ARCHIVE</code>.</p>
+        <p><kbd>5</kbd> turns the latest version into upload-ready files in <code>promo-studio/out/delivery/</code>. When the project is done, <kbd>7</kbd> zips everything into <code>promo-studio/out/archive/</code>.</p>
         <div class="term"><pre><span class="p">$ </span>npm run deliver -- fit-tracker            <span class="c"># or --version v002</span>
 <span class="p">$ </span>npm run tools -- archive fit-tracker</pre><button class="copy">Copy</button></div>
       </div></li>
@@ -442,7 +444,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
       <div><kbd>4</kbd><p><b>Final render</b><span>Full quality into a new version folder.</span></p></div>
       <div><kbd>5</kbd><p><b>Deliver</b><span>Platform encodes, GIF previews, contact sheet.</span></p></div>
       <div><kbd>6</kbd><p><b>Prep assets</b><span>Screenshots, logo or music from the inbox.</span></p></div>
-      <div><kbd>7</kbd><p><b>Archive project</b><span>Zips the project into <code>90_ARCHIVE</code>.</span></p></div>
+      <div><kbd>7</kbd><p><b>Archive project</b><span>Zips the project into <code>promo-studio/out/archive/</code>.</span></p></div>
       <div><kbd>8</kbd><p><b>Open a folder</b><span>Jump to the inbox, renders, deliveries, archive or briefs.</span></p></div>
       <div><kbd>9</kbd><p><b>Doctor</b><span>Checks Node, npm, FFmpeg, Python and the folders.</span></p></div>
       <div><kbd>w</kbd><p><b>Autopilot</b><span>Watch the inbox and run pre-production automatically.</span></p></div>
@@ -582,7 +584,7 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
       <details><summary>Ask Claude Code refused to change a config or script</summary>
         <div class="ans"><p>That's on purpose. Unattended requests can only edit briefs and templates. For a bigger change, chat with Claude (<kbd>c</kbd>) and approve each step yourself.</p></div></details>
       <details><summary>My render shows [placeholder] text, or looks like the sample</summary>
-        <div class="ans"><p>A new project starts with placeholder copy in square brackets. It shows up in the video until you replace it, and final renders refuse to start while any is left. Fill the brief in one of these ways: chat with Claude (<kbd>c</kbd>), drop screenshots and a logo in <code>00_INBOX/&lt;project&gt;</code> and press <kbd>w</kbd>, use the AI brief (<kbd>a</kbd> → <kbd>1</kbd>), or edit <code>brief.json</code> yourself.</p></div></details>
+        <div class="ans"><p>A new project starts with placeholder copy in square brackets. It shows up in the video until you replace it, and final renders refuse to start while any is left. Fill the brief in one of these ways: chat with Claude (<kbd>c</kbd>), drop screenshots and a logo in <code>promo-studio/inbox/&lt;project&gt;/</code> and press <kbd>w</kbd>, use the AI brief (<kbd>a</kbd> → <kbd>1</kbd>), or edit <code>brief.json</code> yourself.</p></div></details>
       <details><summary>My video has no captions</summary>
         <div class="ans"><p>Captions come from the project's voiceover. Create one with <kbd>a</kbd> → <kbd>3</kbd>. If you changed the number of features or removed the stats after writing it, the old voiceover no longer fits and captions switch off until you write it again. Also check that <code>brief.json</code> doesn't say <code>"captions": false</code>.</p></div></details>
       <details><summary>Setup says "Remotion Studio is running"</summary>

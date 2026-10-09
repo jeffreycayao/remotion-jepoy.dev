@@ -10,15 +10,18 @@
 | **Launcher** | double-click `PROMO STUDIO.bat` | double-click `Promo Studio.command` or `./promo-studio.sh` | `./promo-studio.sh` |
 | **Or, anywhere** | `cd promo-studio && npm start` | same | same |
 
-Only requirement before setup: **Node.js 18+** (`winget install OpenJS.NodeJS.LTS` / `brew install node` / nodejs.org).
+Only requirement before setup: **Node.js 22.18+** (`winget install OpenJS.NodeJS.LTS` / `brew install node` / nodejs.org).
 Setup then installs everything else and tells you the exact command for anything it can't install itself
 (Python 3.9+, FFmpeg — both optional, only needed for the prep/deliver helpers; Linux may need Chrome libraries, which setup lists).
 
 **Cloning on Windows:** use `git clone -c core.longpaths=true <repo-url>` (some bundled Remotion skill files have long paths).
 
-**Moving the folder between computers/OSes:** just copy it and run setup again. It detects that `node_modules`
-and the Python venv were built for another OS and rebuilds them (native binaries differ per OS), and restores the
-executable bit on the `.sh` / `.command` files. Tested: Windows 11 and Debian 12 (Docker). macOS uses the same Node/bash code path.
+**Moving the folder between computers/OSes:** copy the entire folder, including `promo-studio/inbox/` and
+`promo-studio/out/`, then run setup again. It detects that `node_modules` and the Python venv were built for
+another OS and rebuilds them (native binaries differ per OS), and restores the executable bit on the `.sh` /
+`.command` files. A Git clone brings only tracked files; commit any project briefs and prepared assets you need,
+then copy ignored originals, renders, deliveries, and archives separately. Tested: Windows 11 and
+Debian 12 (Docker). macOS uses the same Node/bash code path.
 
 The launcher also takes direct commands, handy for scripts:
 `./promo-studio.sh render demo-app` · `draft demo-app --formats 9x16` · `deliver demo-app` · `studio` · `doctor` · `setup`
@@ -38,7 +41,7 @@ to the menu. If Studio was already running, the window attaches to it and leaves
 
 ## Autopilot (launcher → w)
 
-Drop a folder per app into `00_INBOX` (screenshots in feature order, a file with "logo" in its name, optional music and `notes.txt`). The autopilot waits until copying finishes, then runs pre-production on its own:
+Drop a folder per app into `promo-studio/inbox/` (screenshots in feature order, a file with "logo" in its name, optional music and `notes.txt`). The autopilot waits until copying finishes, then runs pre-production on its own:
 
 **assets → logo colors → AI brief → hook variants → voiceover → vertical draft render → AI visual QA → `projects/<app>/autopilot-report.md`**
 
@@ -69,7 +72,7 @@ their pixel sizes, brand rules and how to preview. Pick a project (or **n** for 
 | **Auto-brief** | `npm run ai -- brief <slug> [--url URL] [--notes "…"] [--dry-run]` | Claude API | `brief.json` written from inbox screenshots, logo, `notes.txt` and (optionally) the app's website. Old version kept in `projects/<slug>/history/`. |
 | **Hook variants** | `npm run ai -- hooks <slug> [--count 5] [--create]` | Claude API | `hooks.md`; with `--create`, one renderable project per variant (`<slug>-hook-1…`, vertical by default) |
 | **Voiceover script** | `npm run ai -- voiceover <slug> [--tone "…"]` | Claude API | `voiceover.md` / `.json`, one line per scene within its word budget (≈2.5 words/s) |
-| **Visual QA** | `npm run ai -- qa <slug> [--formats 9x16]` | Claude API | Renders every scene × format, reviews them; `20_RENDERS/<slug>/_qa/<time>/report.md` |
+| **Visual QA** | `npm run ai -- qa <slug> [--formats 9x16]` | Claude API | Renders every scene × format, reviews them; `promo-studio/out/renders/<slug>/_qa/<time>/report.md` |
 | **Ask Claude Code** | `npm run ai -- ask "change …"` | Your Claude plan | Claude Code edits the project (reads `CLAUDE.md` + skills) |
 | **Ask Codex** | `npm run ai -- ask "change …" --codex` | Your ChatGPT plan | OpenAI Codex edits the project (reads `AGENTS.md`) |
 
@@ -125,28 +128,31 @@ Not offered: `@remotion/zod-types-v3` (this project uses Zod 4) and `@remotion/t
 
 | Folder | Stage | What goes here |
 |---|---|---|
-| `00_INBOX/<slug>/` | 1 · Intake | Raw client material: screenshots, logos, music, notes. Never edited. |
+| `promo-studio/inbox/<slug>/` | 1 · Intake | Raw client material: screenshots, logos, music, notes. Never edited. |
 | `promo-studio/projects/<slug>/brief.json` | 2 · Brief | **Source of truth**: copy, colors, font, features, stats, CTA, timing, formats. |
 | `promo-studio/public/projects/<slug>/` | 2 · Assets | Prepared assets the video uses (`screens/`, `audio/`, `logo.*`). |
-| `20_RENDERS/<slug>/v###/` | 3 · Render | Auto-versioned masters + thumbnails + `brief.snapshot.json` (exact props used). `_drafts/` for quick previews. |
-| `30_DELIVERY/<slug>/v###_<date>/` | 4 · Deliver | Platform-ready MP4s (-14 LUFS, faststart), GIF previews, contact sheet, `manifest.json`. |
-| `90_ARCHIVE/` | 5 · Archive | Zipped projects (brief + assets + renders + deliveries). |
+| `promo-studio/out/frames/` | 2 · Preview | Scratch stills from `npm run frames`. |
+| `promo-studio/out/renders/<slug>/v###/` | 3 · Render | Auto-versioned masters + thumbnails + `brief.snapshot.json` (exact props used). `_drafts/` for quick previews; `_qa/` for visual QA. |
+| `promo-studio/out/delivery/<slug>/v###_<date>/` | 4 · Deliver | Platform-ready MP4s (-14 LUFS, faststart), GIF previews, contact sheet, `manifest.json`. |
+| `promo-studio/out/archive/` | 5 · Archive | Zipped project material (originals + brief + assets + renders + deliveries); use the full workspace to run the app. |
 | `tools/` | — | Python helpers (`promo.py`) + venv. |
 | `.claude/skills/` | — | Remotion agent skills from `github.com/remotion-dev/skills` (pinned in `skills-lock.json`). |
+
+The old workspace-root `00_INBOX/`, `20_RENDERS/`, `30_DELIVERY/`, and `90_ARCHIVE/` folders hold historical material. Keep them intact; all new work goes under `promo-studio/`.
 
 ## Workflow
 
 ```
 1. New project      npm run new -- fit-tracker "Fit Tracker"      (creates brief + inbox folder)
-2. Drop files       00_INBOX/fit-tracker/   (screenshots in feature order, logo, music)
+2. Drop files       promo-studio/inbox/fit-tracker/   (screenshots in feature order, logo, music)
 3. Prep assets      npm run tools -- prep-screens fit-tracker --apply
                     npm run tools -- prep-logo  fit-tracker <file> --apply
                     npm run tools -- prep-audio fit-tracker <file> --apply
 4. Write the brief  promo-studio/projects/fit-tracker/brief.json
-5. Preview          npm run dev  → http://localhost:3000  → Projects/fit-tracker
-6. Draft            npm run draft -- fit-tracker             (half-res, → _drafts/)
-7. Final            npm run render -- fit-tracker            (→ v001, v002, …)
-8. Deliver          npm run deliver -- fit-tracker           (latest version → 30_DELIVERY)
+5. Preview          npm run dev  → http://localhost:3100  → Projects/fit-tracker
+6. Draft            npm run draft -- fit-tracker             (half-res, → out/renders/fit-tracker/_drafts/)
+7. Final            npm run render -- fit-tracker            (→ out/renders/fit-tracker/v001, v002, …)
+8. Deliver          npm run deliver -- fit-tracker           (latest version → out/delivery/fit-tracker/)
 9. Archive          npm run tools -- archive fit-tracker
 ```
 

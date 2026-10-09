@@ -7,7 +7,7 @@ import { renderStill, selectComposition } from "@remotion/renderer";
 import fs from "node:fs";
 import path from "node:path";
 import { checkBrief, placeholderHelp } from "./brief-check.mjs";
-import { c, listProjects, STUDIO } from "./_platform.mjs";
+import { c, listProjects, OUT, STUDIO } from "./_platform.mjs";
 
 const [slug, format = "9x16", framesArg = "60,150,300"] = process.argv.slice(2);
 const FORMATS = ["16x9", "9x16", "1x1", "4x5"];
@@ -25,11 +25,11 @@ if (!check.ok || !check.brief.formats.includes(format)) {
 }
 const brief = check.brief;
 if (check.placeholders.length) console.log(c.yellow(`  ⚠ ${placeholderHelp(slug, check.placeholders)}`));
-const outDir = path.join(STUDIO, "out", "frames", `${slug}-${format}`);
+const outDir = path.join(OUT, "frames", `${slug}-${format}`);
 fs.mkdirSync(outDir, { recursive: true });
 
-const serveUrl = await bundle({ entryPoint: path.join(STUDIO, "src", "index.ts") });
-const composition = await selectComposition({ serveUrl, id: `${slug}-${format}`, inputProps: brief.props });
+const serveUrl = await bundle({ entryPoint: path.join(STUDIO, "src", "index.ts"), publicDir: path.join(STUDIO, "public") });
+const composition = await selectComposition({ serveUrl, id: `${brief.compositionIdPrefix ?? slug}-${format}`, inputProps: brief.props });
 for (const n of framesArg.split(",").map(Number)) {
   const frame = Math.min(n, composition.durationInFrames - 1);
   const output = path.join(outDir, `frame-${frame}.jpg`);

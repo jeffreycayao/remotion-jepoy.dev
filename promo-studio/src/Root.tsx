@@ -36,7 +36,7 @@ export const RemotionRoot: React.FC = () => {
                 {(Array.isArray(brief.formats) ? brief.formats : []).filter((f) => f in FORMATS).map((fmt) => (
                   <Composition
                     key={fmt}
-                    id={`${slug}-${fmt}`}
+                    id={`${brief.compositionIdPrefix ?? slug}-${fmt}`}
                     component={custom.component}
                     durationInFrames={custom.durationInFrames}
                     fps={FPS}

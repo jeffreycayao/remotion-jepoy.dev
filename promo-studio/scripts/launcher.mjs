@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
-import { c, listProjects, MARKER, openPath, PLATFORM_ID, resolveCommand, ROOT, run, STUDIO } from "./_platform.mjs";
+import { ARCHIVE, c, DELIVERY, INBOX, listProjects, MARKER, openPath, PLATFORM_ID, RENDERS, resolveCommand, run, STUDIO } from "./_platform.mjs";
 import { openStudio } from "./app-window.mjs";
 import { chat } from "./ai/chat.mjs";
 import { actionHeader, goodbye, renderHome, ui } from "./brand.mjs";
@@ -18,10 +18,10 @@ import * as updates from "./upgrade.mjs";
 const FORMAT_KEYS = ["16x9", "9x16", "1x1", "4x5"];
 
 const DIR = {
-  inbox: path.join(ROOT, "00_INBOX"),
-  renders: path.join(ROOT, "20_RENDERS"),
-  delivery: path.join(ROOT, "30_DELIVERY"),
-  archive: path.join(ROOT, "90_ARCHIVE"),
+  inbox: INBOX,
+  renders: RENDERS,
+  delivery: DELIVERY,
+  archive: ARCHIVE,
   briefs: path.join(STUDIO, "projects"),
 };
 
@@ -98,7 +98,7 @@ const actions = {
     const ap = (...args) => run("node", ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", path.join(STUDIO, "scripts", "autopilot.mjs"), ...args]);
     if (rest.length) return ap(...rest);
     console.log(`
-    Drop each app's files into its own folder in ${c.bold("00_INBOX")} — screenshots (named in feature order),
+    Drop each app's files into its own folder in ${c.bold("inbox")} — screenshots (named in feature order),
     a file with "logo" in its name, optional music and a notes.txt. The autopilot then preps the assets,
     writes the brief, hooks and voiceover, renders a vertical draft and runs a visual check.
 
@@ -126,7 +126,7 @@ const actions = {
     ai("status");
     console.log(`
     ${c.bold("Claude API")} ${c.dim("(needs an API key · ~$0.05–0.30 per run)")}
-    1. Auto-brief        screenshots + logo + notes in 00_INBOX → brief.json
+    1. Auto-brief        screenshots + logo + notes in inbox → brief.json
     2. Hook variants     5 opening lines for A/B tests (optionally as projects)
     3. Voiceover script  narration timed to each scene
     4. Visual QA         renders every scene/format and reviews it
@@ -219,7 +219,7 @@ const actions = {
   async prep() {
     const slug = await pickProject();
     if (!slug) return;
-    console.log(`    a. Screenshots from 00_INBOX/${slug}/ (assigned to features in name order)\n    b. Logo file\n    c. Music file`);
+    console.log(`    a. Screenshots from inbox/${slug}/ (assigned to features in name order)\n    b. Logo file\n    c. Music file`);
     const k = (await ask("  Choose: ")).toLowerCase();
     if (k === "a") return npm("tools", "--", "prep-screens", slug, "--apply");
     const kind = { b: "prep-logo", c: "prep-audio" }[k];
@@ -233,7 +233,7 @@ const actions = {
   },
   async open() {
     const keys = Object.keys(DIR);
-    keys.forEach((k, i) => console.log(`    ${i + 1}. ${path.relative(ROOT, DIR[k])}`));
+    keys.forEach((k, i) => console.log(`    ${i + 1}. ${path.relative(STUDIO, DIR[k])}`));
     const k = keys[Number(await ask("  Folder: ")) - 1];
     if (k) openPath(DIR[k]);
   },
@@ -328,8 +328,8 @@ const homeStatus = () => {
     .join("   ");
   const shown = projects.slice(0, 5).join(", ") + (projects.length > 5 ? ui.muted(` +${projects.length - 5} more`) : "");
   return [
-    ["Projects", projects.length ? `${ui.bold(String(projects.length))}  ${ui.muted(shown)}` : ui.muted("none yet — press 2, or drop a folder in 00_INBOX and press w")],
-    ["Inbox", inbox ? `${ui.bold(String(inbox))} ${ui.muted(inbox === 1 ? "folder in 00_INBOX" : "folders in 00_INBOX")}` : ui.muted("empty")],
+    ["Projects", projects.length ? `${ui.bold(String(projects.length))}  ${ui.muted(shown)}` : ui.muted("none yet — press 2, or drop a folder in inbox and press w")],
+    ["Inbox", inbox ? `${ui.bold(String(inbox))} ${ui.muted(inbox === 1 ? "folder in inbox" : "folders in inbox")}` : ui.muted("empty")],
     ["AI", ai],
     ["Updates", updateLine()],
   ];

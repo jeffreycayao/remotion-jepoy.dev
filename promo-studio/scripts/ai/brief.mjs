@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { c, ROOT, run, STUDIO } from "../_platform.mjs";
+import { c, INBOX, run, STUDIO } from "../_platform.mjs";
 import { imageBlock, inboxNotes, readBrief, structured, textBlock, writeBrief } from "./core.mjs";
 
 const { appPromoSchema, fontChoices, statSchema } = await import("../../src/templates/AppPromo/schema.ts");
@@ -62,10 +62,10 @@ const IMAGE = /\.(png|jpe?g|webp|heic)$/i;
 
 /**
  * Prepare inbox material into public/ (same helpers as the menu's "Prep assets") and collect inputs.
- * `inboxDir` defaults to 00_INBOX/<slug>; the autopilot passes the folder the user actually dropped.
+ * `inboxDir` defaults to inbox/<slug>; the autopilot passes the folder the user actually dropped.
  */
 export const prepareInputs = (slug, { inboxDir, notes, force = false } = {}) => {
-  const inbox = inboxDir ?? path.join(ROOT, "00_INBOX", slug);
+  const inbox = inboxDir ?? path.join(INBOX, slug);
   const brief = readBrief(slug);
   const screensDir = path.join(STUDIO, "public", "projects", slug, "screens");
   const py = (...args) => run("node", [path.join(STUDIO, "scripts", "py.mjs"), ...args], { quiet: true });
@@ -158,7 +158,7 @@ export const autoBrief = async (slug, { url, notes, dryRun } = {}) => {
   }
   content.push(textBlock(briefTask({ slug, brief, screens, sources, url: url ? `${url} (read it with the web_fetch tool)` : "" })));
   if (!screens.length && !sources && !url && !logoBlock) {
-    throw new Error(`Nothing to work from. Add screenshots/logo/notes.txt to 00_INBOX/${slug}/ or pass --url / --notes.`);
+    throw new Error(`Nothing to work from. Add screenshots/logo/notes.txt to inbox/${slug}/ or pass --url / --notes.`);
   }
   console.log(c.dim(`  Inputs: ${screens.length} screenshot(s), logo: ${logoBlock ? "yes" : "no"}, notes: ${sources ? "yes" : "no"}, website: ${url ?? "no"}`));
 
