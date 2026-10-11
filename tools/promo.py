@@ -37,9 +37,6 @@ INBOX = STUDIO / "inbox"
 RENDERS = STUDIO / "out" / "renders"
 DELIVERY = STUDIO / "out" / "delivery"
 ARCHIVE = STUDIO / "out" / "archive"
-# Existing external renders remain readable so older versions can still be delivered.
-# Nothing in this helper writes to the legacy production folders.
-LEGACY_RENDERS = ROOT / "20_RENDERS"
 
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".heic", ".bmp", ".tif", ".tiff"}
 AUDIO_EXT = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"}
@@ -98,21 +95,19 @@ def update_brief(slug: str, fn) -> None:
 
 
 def latest_version(slug: str) -> Path:
-    for root in (RENDERS, LEGACY_RENDERS):
-        base = root / slug
-        versions = sorted(p for p in base.glob("v[0-9][0-9][0-9]") if p.is_dir()) if base.exists() else []
-        if versions:
-            return versions[-1]
+    base = RENDERS / slug
+    versions = sorted(p for p in base.glob("v[0-9][0-9][0-9]") if p.is_dir()) if base.exists() else []
+    if versions:
+        return versions[-1]
     raise SystemExit(f"✗ No renders for '{slug}'. Run: npm run render -- {slug}")
 
 
 def selected_version(slug: str, version: str | None) -> Path:
     if version is None:
         return latest_version(slug)
-    for root in (RENDERS, LEGACY_RENDERS):
-        candidate = root / slug / version
-        if candidate.is_dir():
-            return candidate
+    candidate = RENDERS / slug / version
+    if candidate.is_dir():
+        return candidate
     raise SystemExit(f"✗ No render version '{version}' for '{slug}'.")
 
 
@@ -271,7 +266,7 @@ def make_contact_sheet(source: Path, out: Path, cols: int = 4, count: int = 12, 
 
 
 def cmd_deliver(a: argparse.Namespace) -> None:
-    """Platform-ready encodes + previews from an in-app or legacy render."""
+    """Platform-ready encodes + previews from a versioned render."""
     src = selected_version(a.slug, a.version)
     videos = sorted(src.glob("*.mp4"))
     if not videos:

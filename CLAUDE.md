@@ -14,7 +14,7 @@ Remotion-based factory for app promo videos. Read `README.md` for the folder map
 | Platform-ready files | `promo-studio/out/delivery/<slug>/` | Only `npm run deliver`. |
 | Zipped projects | `promo-studio/out/archive/` | Only `npm run tools -- archive`. |
 
-The workspace-root `00_INBOX/`, `20_RENDERS/`, `30_DELIVERY/`, and `90_ARCHIVE/` folders are historical. Leave their contents untouched; new work belongs under `promo-studio/`.
+Everything lives under `promo-studio/`. The old workspace-root `00_INBOX/`, `20_RENDERS/`, `30_DELIVERY/`, and `90_ARCHIVE/` folders were merged into it and removed — never recreate them. Pre-pipeline renders are kept in `promo-studio/out/renders/<slug>/_legacy/`.
 Studio uses port 3100. Check its owner before restarting Studio, and never start this project on port 3000, which is reserved for Licensya PH v2.
 
 **Bespoke designs** (a one-off look the AppPromo brief can't express): build it in `promo-studio/src/templates/<Name>/` (export the component and its length in frames), register it in `promo-studio/src/templates/registry.ts`, then create a project for it — `promo-studio/projects/<app>-<piece>/brief.json` with `{"template": "<Name>", "formats": ["16x9", "9x16"], "props": {}}` — and render it with `npm run draft|render -- <app>-<piece>`. Never add hard-coded `<Composition>`s to `Root.tsx`: they can't be rendered, versioned or delivered. The AI brief tools only work on AppPromo projects.
@@ -52,7 +52,7 @@ Interactive Claude Code started in the launcher terminal with `--append-system-p
 
 - Every project has a `brief.json` for its template, formats, and props. AppPromo copy lives in its brief; bespoke templates can also contain project-specific copy in `src/templates/<Name>/`. Never hand-edit `src/projects.generated.ts` (run `npm run sync`).
 - Never overwrite or delete anything in `promo-studio/out/renders/`, `promo-studio/out/delivery/`, or `promo-studio/out/archive/` by hand — renders are auto-versioned.
-- `promo-studio/inbox/` is read-only raw material. Leave the historical workspace-root media folders untouched too.
+- `promo-studio/inbox/` is read-only raw material. Original media never goes in `projects/<slug>/` (briefs and notes only).
 - Template changes affect every project. For a one-off look, add a bespoke template (see "Where every file goes") rather than forking AppPromo with conditionals.
 - Animations must be frame-driven (`useCurrentFrame`, `interpolate`, `spring`) — never CSS transitions/animations.
 - Upgrade Remotion only with `npm run updates -- upgrade` (backup → `remotion upgrade --skip-skills` → health checks → rollback). **Never run `npx remotion upgrade --help` to read flags — it ignores `--help` and performs the upgrade.** Read flags from `node_modules/@remotion/cli/dist/` instead. After any dependency change run `npm run updates -- verify`.

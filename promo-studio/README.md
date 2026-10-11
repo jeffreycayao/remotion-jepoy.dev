@@ -10,11 +10,11 @@ All active project files live under this folder:
 | `projects/<slug>/brief.json` | Project content and template selection. |
 | `public/projects/<slug>/` | Prepared assets loaded by Remotion. |
 | `out/frames/` | Preview stills. |
-| `out/renders/<slug>/` | Drafts, versioned finals, and visual QA. |
+| `out/renders/<slug>/` | Drafts, versioned finals, visual QA, and `_legacy/` pre-pipeline renders. |
 | `out/delivery/<slug>/` | Upload-ready files. |
 | `out/archive/` | Finished project ZIPs. |
 
-The four numbered media folders in the workspace root are historical and must remain untouched. `inbox/` and `out/` are Git ignored, so copy them separately after a Git clone when transferring media between machines.
+Nothing lives outside this folder: the old workspace-root `00_INBOX/`, `20_RENDERS/`, `30_DELIVERY/`, `90_ARCHIVE/` were merged here and removed. `inbox/` and `out/` are Git ignored, so copy them separately after a Git clone when transferring media between machines.
 
 - `npm run dev` — Studio at `http://localhost:3100` (port 3000 is reserved for Licensya PH v2)
 - `npm run new -- <slug> "Name"` — new project

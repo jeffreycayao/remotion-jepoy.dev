@@ -16,7 +16,7 @@ import {
 import fs from "node:fs";
 import path from "node:path";
 import { checkBrief, placeholderHelp } from "./brief-check.mjs";
-import { RENDERS, ROOT, STUDIO } from "./_platform.mjs";
+import { RENDERS, STUDIO } from "./_platform.mjs";
 
 // ── args ────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
@@ -56,8 +56,7 @@ const nextVersionDir = (slug) => {
   const versionNumbers = (dir) => fs.existsSync(dir)
     ? fs.readdirSync(dir).map((n) => /^v(\d{3})$/.exec(n)?.[1]).filter(Boolean).map(Number)
     : [];
-  // Read old versions to keep numbering monotonic; never write to the legacy folder.
-  const nums = [...versionNumbers(base), ...versionNumbers(path.join(ROOT, "20_RENDERS", slug))];
+  const nums = versionNumbers(base);
   const tag = `v${String((nums.length ? Math.max(...nums) : 0) + 1).padStart(3, "0")}`;
   return { dir: path.join(base, tag), tag };
 };

@@ -4,7 +4,7 @@ This project uses the `PancakeEcosystem` bespoke template. The four registered I
 
 ## Narration and render readiness
 
-The user-supplied 32.080-second Taglish MP3 is preserved unchanged in `00_INBOX/pancake-end-to-end/`. Its prepared copy is `promo-studio/public/projects/pancake-end-to-end/audio/pancake_ecosystem_ad.mp3`; the source, inbox, and prepared copies have matching SHA-256 hashes. Source audio preflight measured −19.3 LUFS integrated and −2.5 dBFS true peak, with no clipping. Local transcription broadly matched all four scripted sections; Taglish and product names were too noisy for a word-for-word check.
+The user-supplied 32.080-second Taglish MP3 is preserved unchanged in `promo-studio/inbox/pancake-end-to-end/`. Its prepared copy is `promo-studio/public/projects/pancake-end-to-end/audio/pancake_ecosystem_ad.mp3`; the source, inbox, and prepared copies have matching SHA-256 hashes. Source audio preflight measured −19.3 LUFS integrated and −2.5 dBFS true peak, with no clipping. Local transcription broadly matched all four scripted sections; Taglish and product names were too noisy for a word-for-word check.
 
 `promo-studio/public/projects/pancake-end-to-end/audio/pancake_ecosystem_ad_aligned.wav` is a 35-second derivative of that MP3, shared by all four compositions. It places the four spoken sections at 0, 7, 17, and 26 seconds; only section 2 plays at 1.163× to finish before the scene-3 cut. `MainCommercial.tsx` mounts this as one audio track starting at frame 0 so Studio preview and exports use the same complete narration. The scene-4 narration ends near frame 985, leaving the final call to action visible through frame 1050.
 
@@ -25,6 +25,6 @@ The six WAVs in `promo-studio/public/projects/pancake-end-to-end/sfx/` are local
 
 ## Source assets and claims
 
-The user's pasted brief and the supplied WebP module logos are preserved in `00_INBOX/pancake-end-to-end/`. The prepared marks in `public/projects/pancake-end-to-end/logos/` include existing Automatika/Pancake artwork from the earlier partner promo and the [official Botcake SVG](https://botcake.io/static/images/botcake-logo-2025.svg).
+The user's pasted brief and the supplied WebP module logos are preserved in `promo-studio/inbox/pancake-end-to-end/`. The prepared marks in `public/projects/pancake-end-to-end/logos/` include existing Automatika/Pancake artwork from the earlier partner promo and the [official Botcake SVG](https://botcake.io/static/images/botcake-logo-2025.svg).
 
 The `+30% Lift` ticker is explicitly an illustrative interface metric; no campaign result was supplied. The official-partner wording is supplied by the user and appears on [Automatika's site](https://www.automatika.ph/). Review quantified claims and courier coverage against approved sales material before publishing the paid ad.

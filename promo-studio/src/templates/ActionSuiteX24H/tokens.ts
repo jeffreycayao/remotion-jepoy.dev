@@ -28,7 +28,7 @@ export const C = {
 
 /**
  * Scene boundaries in absolute frames (30 fps), measured from the recorded voiceover
- * (00_INBOX/atmt-action-suite/ElevenLabs_…mp3, 30.3 s) by its phrase pauses. Each cut lands
+ * (promo-studio/inbox/atmt-action-suite/ElevenLabs_…mp3, 30.3 s) by its phrase pauses. Each cut lands
  * 4 frames before its phrase so the picture leads the word. Re-measure if the voiceover changes:
  *   ffmpeg -i voiceover.mp3 -af silencedetect=noise=-35dB:d=0.07 -f null -
  */

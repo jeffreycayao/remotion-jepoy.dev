@@ -132,13 +132,17 @@ Not offered: `@remotion/zod-types-v3` (this project uses Zod 4) and `@remotion/t
 | `promo-studio/projects/<slug>/brief.json` | 2 · Brief | **Source of truth**: copy, colors, font, features, stats, CTA, timing, formats. |
 | `promo-studio/public/projects/<slug>/` | 2 · Assets | Prepared assets the video uses (`screens/`, `audio/`, `logo.*`). |
 | `promo-studio/out/frames/` | 2 · Preview | Scratch stills from `npm run frames`. |
-| `promo-studio/out/renders/<slug>/v###/` | 3 · Render | Auto-versioned masters + thumbnails + `brief.snapshot.json` (exact props used). `_drafts/` for quick previews; `_qa/` for visual QA. |
+| `promo-studio/out/renders/<slug>/v###/` | 3 · Render | Auto-versioned masters + thumbnails + `brief.snapshot.json` (exact props used). `_drafts/` for quick previews; `_qa/` for visual QA; `_legacy/` for renders made before the pipeline existed. |
 | `promo-studio/out/delivery/<slug>/v###_<date>/` | 4 · Deliver | Platform-ready MP4s (-14 LUFS, faststart), GIF previews, contact sheet, `manifest.json`. |
 | `promo-studio/out/archive/` | 5 · Archive | Zipped project material (originals + brief + assets + renders + deliveries); use the full workspace to run the app. |
 | `tools/` | — | Python helpers (`promo.py`) + venv. |
 | `.claude/skills/` | — | Remotion agent skills from `github.com/remotion-dev/skills` (pinned in `skills-lock.json`). |
 
-The old workspace-root `00_INBOX/`, `20_RENDERS/`, `30_DELIVERY/`, and `90_ARCHIVE/` folders hold historical material. Keep them intact; all new work goes under `promo-studio/`.
+Everything lives under `promo-studio/`: there are no media folders at the workspace root. (The old `00_INBOX/`, `20_RENDERS/`,
+`30_DELIVERY/` and `90_ARCHIVE/` folders were merged into `promo-studio/` and removed.) Files in `_legacy/` are never
+picked up by `deliver` or the version counter, which only look at `v###` folders.
+
+**Never render with `npx remotion render` directly.** It drops loose files into `promo-studio/out/`. Use `npm run draft` / `npm run render`.
 
 ## Workflow
 

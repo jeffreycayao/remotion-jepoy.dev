@@ -22,7 +22,7 @@ Two nights. Two industry coaches. One hundred percent FREE—pero mabilis mapuno
 I-click na ang registration link sa caption bago ka maubusan ng slot. Register now!
 
 The supplied original MP3 is preserved in
-00_INBOX/the-happy-freelancers-webinars/. Its prepared render copy is
+promo-studio/inbox/the-happy-freelancers-webinars/. Its prepared render copy is
 promo-studio/public/projects/the-happy-freelancers-webinars/audio/webinar_fomo_vo.mp3.
 The video also accepts the requested public-root path
 promo-studio/public/webinar_fomo_vo.mp3.

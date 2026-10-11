@@ -4,7 +4,7 @@
 
 ## Audio
 
-The user-supplied ElevenLabs MP3 is copied unchanged to `00_INBOX/automatika-fast-ad/` and prepared at `promo-studio/public/projects/automatika-fast-ad/audio/voiceover.mp3`. The source is 34.880 seconds, mounted once at frame 0 at normal speed and full volume. It nearly fills the 35-second composition. Do not split, trim, or tempo-adjust it.
+The user-supplied ElevenLabs MP3 is copied unchanged to `promo-studio/inbox/automatika-fast-ad/` and prepared at `promo-studio/public/projects/automatika-fast-ad/audio/voiceover.mp3`. The source is 34.880 seconds, mounted once at frame 0 at normal speed and full volume. It nearly fills the 35-second composition. Do not split, trim, or tempo-adjust it.
 
 The brief's fixed scene ranges are `0–210`, `210–480`, `480–780`, and `780–1050`. Waveform-based pauses appear around 8.4, 15.3, and 26.4 seconds, so visual transitions accommodate small narration overlap while retaining those exact cuts.
 

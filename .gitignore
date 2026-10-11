@@ -11,17 +11,12 @@ __pycache__/
 .env
 .env.*
 
-# Historical workspace-root media. Keep these folders and their contents untouched.
-# New work is stored under promo-studio/inbox/ and promo-studio/out/ (ignored there).
-# Only each legacy folder's README is tracked.
-00_INBOX/*
-!00_INBOX/README.txt
-20_RENDERS/*
-!20_RENDERS/README.txt
-30_DELIVERY/*
-!30_DELIVERY/README.txt
-90_ARCHIVE/*
-!90_ARCHIVE/README.txt
+# Removed workspace-root media folders (merged into promo-studio/inbox and promo-studio/out).
+# Ignored so a stray copy can't bring them back into Git.
+00_INBOX/
+20_RENDERS/
+30_DELIVERY/
+90_ARCHIVE/
 
 # Tool/OS clutter
 .playwright-mcp/
