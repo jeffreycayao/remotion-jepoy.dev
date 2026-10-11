@@ -10,4 +10,6 @@ where node >nul 2>nul || (
   exit /b 1
 )
 node "promo-studio\scripts\setup.mjs" %*
+set "setup_exit=%ERRORLEVEL%"
 pause
+exit /b %setup_exit%

@@ -1,5 +1,5 @@
 {
-  "$comment": "Plugin catalog for Promo Studio. Groups with \"auto\": true are installed by setup. Manage with the launcher (p) or: npm run plugins -- list | install <group|package…> | remove <package…> | ensure",
+  "$comment": "All supported catalog groups are installed by setup from the pinned package-lock.json. Manage with the launcher (p) or: npm run plugins -- list | install <group|package…> | ensure | verify. Excluded packages are incompatible alternatives.",
   "groups": [
     {
       "id": "core",
@@ -18,7 +18,7 @@
     },
     {
       "id": "production",
-      "title": "Production pack (recommended — installed by setup)",
+      "title": "Production pack (installed by setup)",
       "auto": true,
       "packages": [
         { "name": "@remotion/animation-utils", "desc": "Interpolate colors, transforms and CSS styles" },
@@ -47,6 +47,7 @@
     {
       "id": "captions-ai",
       "title": "Captions & AI audio",
+      "auto": true,
       "packages": [
         { "name": "@remotion/install-whisper-cpp", "desc": "Local Whisper.cpp transcription → word-level captions (downloads a model on first use)" },
         { "name": "@remotion/whisper-webgpu", "desc": "Transcribe in the browser via WebGPU" },
@@ -60,6 +61,7 @@
     {
       "id": "motion-engines",
       "title": "Advanced motion & 3D",
+      "auto": true,
       "packages": [
         { "name": "@remotion/gsap", "desc": "Drive GSAP timelines from the Remotion frame" },
         { "name": "@remotion/rive", "desc": "Rive interactive animations" },
@@ -69,7 +71,8 @@
     },
     {
       "id": "styling",
-      "title": "Styling (needs a line in remotion.config.ts after install)",
+      "title": "Styling (enable in the bundler config before use)",
+      "auto": true,
       "packages": [
         { "name": "@remotion/tailwind-v4", "desc": "TailwindCSS v4 — then call enableTailwind() in remotion.config.ts" },
         { "name": "@remotion/enable-scss", "desc": "SCSS — then call enableScss() in remotion.config.ts" }
@@ -78,6 +81,7 @@
     {
       "id": "cloud-render",
       "title": "Cloud rendering (needs a cloud account)",
+      "auto": true,
       "packages": [
         { "name": "@remotion/lambda", "desc": "Render in parallel on AWS Lambda" },
         { "name": "@remotion/cloudrun", "desc": "Render on Google Cloud Run" },
@@ -87,6 +91,7 @@
     {
       "id": "integration",
       "title": "Integration & tooling",
+      "auto": true,
       "packages": [
         { "name": "@remotion/player", "desc": "Embed live previews in a website/client portal" },
         { "name": "@remotion/webcodecs", "desc": "In-browser media conversion" },
@@ -98,6 +103,7 @@
     {
       "id": "codecs",
       "title": "Extra codecs for client footage",
+      "auto": true,
       "packages": [
         { "name": "@mediabunny/prores", "desc": "Decode Apple ProRes .mov (common from editors)" },
         { "name": "@mediabunny/ac3", "desc": "AC-3 / E-AC-3 audio (broadcast, Blu-ray)" },

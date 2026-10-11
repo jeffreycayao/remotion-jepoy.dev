@@ -1,20 +1,57 @@
 // Plugin manager for the catalog in plugins.json.
 //   npm run plugins -- list                       show everything with install status
-//   npm run plugins -- ensure                     install missing packages from "auto" groups
+//   npm run plugins -- ensure                     install and verify every catalog group
+//   npm run plugins -- verify                     check the locked package set without changes
 //   npm run plugins -- install <group|pkg> [...]  e.g. install cloud-render   /   install @remotion/gsap
 //   npm run plugins -- remove <pkg> [...]
 // Installs go through `npx remotion add`, which pins every package to the project's Remotion version.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { c, run, STUDIO } from "./_platform.mjs";
+import { c, installId, MARKER, run, STUDIO, studioRunning } from "./_platform.mjs";
 
 const catalog = JSON.parse(fs.readFileSync(path.join(STUDIO, "plugins.json"), "utf8"));
 const allPackages = catalog.groups.flatMap((g) => g.packages.map((p) => ({ ...p, group: g.id })));
 
-export const installedSet = () => {
+const declaredVersions = () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(STUDIO, "package.json"), "utf8"));
-  return new Set(Object.keys({ ...pkg.dependencies, ...pkg.devDependencies }));
+  return { ...pkg.dependencies, ...pkg.devDependencies };
+};
+
+export const installedSet = () => new Set(
+  allPackages.filter((p) => fs.existsSync(path.join(STUDIO, "node_modules", p.name, "package.json"))).map((p) => p.name),
+);
+
+/** Check both the committed manifest and the modules npm actually installed. */
+export const verify = () => {
+  const declared = declaredVersions();
+  const lock = JSON.parse(fs.readFileSync(path.join(STUDIO, "package-lock.json"), "utf8"));
+  const issues = [];
+  for (const { name } of allPackages) {
+    if (!declared[name]) {
+      issues.push(`${name} is missing from package.json`);
+      continue;
+    }
+    const locked = lock.packages?.[`node_modules/${name}`]?.version;
+    if (locked !== declared[name] || lock.packages?.[""]?.dependencies?.[name] !== declared[name]) {
+      issues.push(`${name}: package-lock.json does not match ${declared[name]}`);
+      continue;
+    }
+    const file = path.join(STUDIO, "node_modules", name, "package.json");
+    if (!fs.existsSync(file)) {
+      issues.push(`${name} is missing from node_modules`);
+      continue;
+    }
+    const actual = JSON.parse(fs.readFileSync(file, "utf8")).version;
+    if (actual !== declared[name]) issues.push(`${name}: installed ${actual}, locked ${declared[name]}`);
+  }
+  if (issues.length) {
+    issues.slice(0, 8).forEach((issue) => console.log(c.red(`  ✗ ${issue}`)));
+    if (issues.length > 8) console.log(c.red(`  ✗ …and ${issues.length - 8} more`));
+    return false;
+  }
+  console.log(c.green(`  ✓ ${allPackages.length} catalog packages match package.json, package-lock.json, and node_modules.`));
+  return true;
 };
 
 /** Expand group ids and package names into a list of package names. */
@@ -44,8 +81,8 @@ export const list = () => {
 };
 
 export const install = (items) => {
-  const have = installedSet();
-  const wanted = resolve(items).filter((p) => !have.has(p));
+  const declared = declaredVersions();
+  const wanted = resolve(items).filter((p) => !declared[p]);
   if (!wanted.length) {
     console.log(c.green("  ✓ Already installed."));
     return true;
@@ -58,7 +95,21 @@ export const install = (items) => {
   return ok;
 };
 
-export const ensure = () => install(catalog.groups.filter((g) => g.auto).map((g) => g.id));
+export const ensure = () => {
+  const missing = allPackages.filter((p) => !installedSet().has(p.name));
+  const declared = declaredVersions();
+  if (missing.some((p) => declared[p.name])) {
+    if (studioRunning()) {
+      console.log(c.red("  ✗ Close this project's Studio before reinstalling missing packages."));
+      return false;
+    }
+    console.log(`  Reinstalling from package-lock.json to repair ${missing.length} missing package(s)…`);
+    if (!run("npm", ["ci", "--include=dev", "--no-audit", "--no-fund"]).ok) return false;
+  }
+  const ok = install(catalog.groups.filter((g) => g.auto).map((g) => g.id)) && verify();
+  if (ok) fs.writeFileSync(MARKER, installId());
+  return ok;
+};
 
 export const remove = (items) => {
   const core = new Set(catalog.groups.find((g) => g.id === "core").packages.map((p) => p.name));
@@ -75,6 +126,6 @@ export const groups = catalog.groups;
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [cmd, ...rest] = process.argv.slice(2);
   const ok =
-    cmd === "install" ? install(rest) : cmd === "remove" ? remove(rest) : cmd === "ensure" ? ensure() : (list(), true);
+    cmd === "install" ? install(rest) : cmd === "remove" ? remove(rest) : cmd === "ensure" ? ensure() : cmd === "verify" ? verify() : (list(), true);
   process.exit(ok ? 0 : 1);
 }

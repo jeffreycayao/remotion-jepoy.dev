@@ -1,6 +1,8 @@
 // Cross-platform helpers shared by setup.mjs and launcher.mjs (Windows, macOS, Linux).
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
+import { createServer } from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,6 +25,29 @@ export const VENV_PY = path.join(TOOLS, ".venv", IS_WIN ? "Scripts/python.exe" :
 /** Reinstall native Node packages when the OS, CPU, or Node ABI changes. */
 export const PLATFORM_ID = `${process.platform}-${os.arch()}-abi${process.versions.modules}`;
 export const MARKER = path.join(STUDIO, "node_modules", ".promo-platform");
+/** Include the lockfile so a pulled dependency change triggers a clean install. */
+export const installId = () => {
+  const lockfile = path.join(STUDIO, "package-lock.json");
+  if (!fs.existsSync(lockfile)) throw new Error("package-lock.json is missing; restore it before running setup");
+  const hash = createHash("sha256").update(fs.readFileSync(lockfile)).digest("hex");
+  return `${PLATFORM_ID}-${hash}`;
+};
+
+/** Select an OS-available port for the renderer, excluding Studio and Licensya's port 3000. */
+export const chooseRendererPort = async () => {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const port = await new Promise((resolve, reject) => {
+      const server = createServer();
+      server.once("error", reject);
+      server.listen(0, () => {
+        const address = server.address();
+        server.close((err) => err ? reject(err) : resolve(address.port));
+      });
+    });
+    if (port !== 3000 && port !== STUDIO_PORT) return port;
+  }
+  throw new Error("Could not find a render port outside 3000 and 3100");
+};
 
 export const c = {
   bold: (s) => `\x1b[1m${s}\x1b[0m`,

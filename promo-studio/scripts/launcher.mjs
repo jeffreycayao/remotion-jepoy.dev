@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
-import { ARCHIVE, c, DELIVERY, INBOX, listProjects, MARKER, openPath, PLATFORM_ID, RENDERS, resolveCommand, run, STUDIO } from "./_platform.mjs";
+import { ARCHIVE, c, DELIVERY, INBOX, installId, listProjects, MARKER, openPath, PLATFORM_ID, RENDERS, resolveCommand, run, STUDIO } from "./_platform.mjs";
 import { openStudio } from "./app-window.mjs";
 import { chat } from "./ai/chat.mjs";
 import { actionHeader, goodbye, renderHome, ui } from "./brand.mjs";
@@ -81,7 +81,7 @@ const actions = {
     const split = (s) => s.split(/[\s,]+/).filter(Boolean);
     if (cmd) return cmd === "list" ? plugins.list() : cmd === "ensure" ? plugins.ensure() : plugins[cmd]?.(rest);
     plugins.list();
-    console.log(`\n    a. Install the recommended production pack (anything missing)`);
+    console.log(`\n    a. Verify / repair all catalog plugins`);
     console.log(`    b. Install group(s)   ${c.dim(plugins.groups.map((g) => g.id).join(", "))}`);
     console.log(`    c. Install packages by name`);
     console.log(`    d. Remove packages`);
@@ -339,8 +339,8 @@ const banner = () => renderHome({ groups: GROUPS, status: homeStatus(), meta: { 
 
 // First run (or folder copied from another OS) → run setup before anything else.
 const installedFor = fs.existsSync(MARKER) ? fs.readFileSync(MARKER, "utf8").trim() : null;
-if (installedFor !== PLATFORM_ID) {
-  console.log(c.yellow(`\n  First run on ${PLATFORM_ID} — running setup…`));
+if (installedFor !== installId()) {
+  console.log(c.yellow(`\n  First run or package change on ${PLATFORM_ID} — running setup…`));
   if (!run("node", [path.join(STUDIO, "scripts", "setup.mjs")]).ok) process.exit(1);
 }
 

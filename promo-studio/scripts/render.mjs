@@ -16,7 +16,7 @@ import {
 import fs from "node:fs";
 import path from "node:path";
 import { checkBrief, placeholderHelp } from "./brief-check.mjs";
-import { RENDERS, STUDIO } from "./_platform.mjs";
+import { chooseRendererPort, RENDERS, STUDIO } from "./_platform.mjs";
 
 // ── args ────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
@@ -70,6 +70,7 @@ const serveUrl = await bundle({
   entryPoint: path.join(STUDIO, "src", "index.ts"),
   publicDir: path.join(STUDIO, "public"),
 });
+const port = await chooseRendererPort();
 
 for (const slug of slugs) {
   const briefPath = path.join(STUDIO, "projects", slug, "brief.json");
@@ -121,6 +122,7 @@ for (const slug of slugs) {
         serveUrl,
         id,
         inputProps: brief.props,
+        port,
       });
       const name = `${slug}_${fmt}_${tag}`;
 
@@ -136,6 +138,7 @@ for (const slug of slugs) {
         serveUrl,
         composition,
         inputProps: brief.props,
+        port,
         output: thumb,
         frame: posterFrame,
         imageFormat: "jpeg",
@@ -155,6 +158,7 @@ for (const slug of slugs) {
         serveUrl,
         composition,
         inputProps: brief.props,
+        port,
         codec: "h264",
         outputLocation: output,
         crf: draft ? 28 : 18,

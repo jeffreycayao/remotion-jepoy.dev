@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Promo Studio launcher (macOS / Linux). Logic lives in promo-studio/scripts/launcher.mjs.
 #   ./promo-studio.sh                  interactive menu
-#   ./promo-studio.sh render demo-app  run one command directly
+#   ./promo-studio.sh render <slug>   run one command directly
 cd "$(dirname "$0")" || exit 1
 if ! command -v node >/dev/null 2>&1; then
   echo "Node.js is not installed."

@@ -548,13 +548,13 @@ footer .core { font: 800 22px var(--font-heading); color: var(--charcoal); }
   <section id="plugins">
     <header>
       <span class="eyebrow">Plugins · launcher p</span>
-      <h2>More Remotion packages</h2>
-      <p class="lead">Setup installs the core packages and a production pack. Everything else is opt-in and installed at the same version as Remotion, so nothing breaks.</p>
+      <h2>Remotion packages</h2>
+      <p class="lead">Setup installs every supported catalog group at pinned versions, including AI, 3D, cloud rendering and extra codecs. Cloud and API features still need accounts or keys when you use them.</p>
     </header>
     <div class="grid-3">
-      <div class="card"><span class="pill">Installed</span><h3>Production pack</h3><p>macOS cursors for app walkthroughs, light leaks, sound effects, Lottie, local brand fonts, motion blur, hand-drawn highlights, GIFs, SVG paths, animated emoji.</p></div>
-      <div class="card"><h3>Opt-in groups</h3><p><code>captions-ai</code>, <code>motion-engines</code> (GSAP, 3D), <code>styling</code> (Tailwind v4), <code>cloud-render</code>, <code>integration</code>, <code>codecs</code> (ProRes and more).</p></div>
-      <div class="card"><h3>From the terminal</h3><p><code>npm run plugins -- list</code> shows what's installed. <code>install &lt;group&gt;</code> adds a group, and <code>remove &lt;package&gt;</code> takes one out.</p></div>
+      <div class="card"><span class="pill">Installed</span><h3>All eight groups</h3><p>Core, production, captions and AI, motion engines, styling, cloud rendering, integrations, and client footage codecs are included in setup.</p></div>
+      <div class="card"><h3>Using optional features</h3><p>Whisper models download when needed. Cloud services and API features need credentials. Tailwind and SCSS need bundler configuration before use.</p></div>
+      <div class="card"><h3>From the terminal</h3><p><code>npm run plugins -- list</code> shows packages; <code>verify</code> checks them and <code>ensure</code> repairs missing catalog packages.</p></div>
     </div>
   </section>
 

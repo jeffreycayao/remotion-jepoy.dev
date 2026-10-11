@@ -7,7 +7,7 @@ import { renderStill, selectComposition } from "@remotion/renderer";
 import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { c, RENDERS, STUDIO } from "../_platform.mjs";
+import { c, chooseRendererPort, RENDERS, STUDIO } from "../_platform.mjs";
 import { imageBlock, readBrief, sceneList, structured, textBlock } from "./core.mjs";
 
 export const qaSchema = z.object({
@@ -41,13 +41,14 @@ export const renderQaFrames = async (slug, brief, formats) => {
 
   console.log(c.dim(`  Rendering ${fmts.length * scenes.length} QA frames…`));
   const serveUrl = await bundle({ entryPoint: path.join(STUDIO, "src", "index.ts"), publicDir: path.join(STUDIO, "public") });
+  const port = await chooseRendererPort();
   const frames = [];
   for (const fmt of fmts) {
-    const composition = await selectComposition({ serveUrl, id: `${brief.compositionIdPrefix ?? slug}-${fmt}`, inputProps: brief.props });
+    const composition = await selectComposition({ serveUrl, id: `${brief.compositionIdPrefix ?? slug}-${fmt}`, inputProps: brief.props, port });
     for (const s of scenes) {
       const frame = Math.min(composition.durationInFrames - 1, s.start + Math.round(s.frames * 0.7));
       const file = path.join(outDir, `${fmt}_${s.key}.jpg`);
-      await renderStill({ serveUrl, composition, inputProps: brief.props, output: file, frame, imageFormat: "jpeg", jpegQuality: 85, scale: 0.5 });
+      await renderStill({ serveUrl, composition, inputProps: brief.props, output: file, frame, imageFormat: "jpeg", jpegQuality: 85, scale: 0.5, port });
       frames.push({ file, label: `Format ${fmt}, scene "${s.key}" (frame ${frame})` });
     }
     process.stdout.write(c.dim(`    ✓ ${fmt}\n`));

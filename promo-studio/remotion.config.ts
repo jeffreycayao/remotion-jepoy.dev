@@ -10,6 +10,7 @@ import { Config } from "@remotion/cli/config";
 Config.setRspack(true);
 // Port 3000 belongs to Licensya PH v2 on this workstation.
 Config.setStudioPort(3100);
+Config.setRendererPort(3101);
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
 Config.setPublicLicenseKey('free-license');

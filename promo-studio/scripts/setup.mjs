@@ -9,6 +9,7 @@ import {
   DELIVERY,
   findSystemPython,
   INBOX,
+  installId,
   installHint,
   IS_WIN,
   MARKER,
@@ -48,9 +49,15 @@ ok(`Node ${process.versions.node}, npm ${version("npm", "-v") ?? "?"}`);
 step(2, "Node packages");
 const installedFor = fs.existsSync(MARKER) ? fs.readFileSync(MARKER, "utf8").trim() : null;
 const hasModules = fs.existsSync(path.join(STUDIO, "node_modules"));
-if (force || !hasModules || installedFor !== PLATFORM_ID) {
-  if (hasModules && installedFor && installedFor !== PLATFORM_ID) {
-    console.log(`  node_modules was installed for ${installedFor}; reinstalling native binaries for ${PLATFORM_ID}…`);
+const declared = JSON.parse(fs.readFileSync(path.join(STUDIO, "package.json"), "utf8"));
+const requiredPackages = Object.keys({ ...declared.dependencies, ...declared.devDependencies });
+const missingPackages = requiredPackages.filter((name) => !fs.existsSync(path.join(STUDIO, "node_modules", name, "package.json")));
+if (force || !hasModules || installedFor !== installId() || missingPackages.length) {
+  if (hasModules && installedFor && installedFor !== installId()) {
+    console.log("  Platform or package-lock.json changed; reinstalling the locked packages…");
+  }
+  if (missingPackages.length) {
+    console.log(`  Missing installed packages: ${missingPackages.slice(0, 5).join(", ")}${missingPackages.length > 5 ? ` (+${missingPackages.length - 5} more)` : ""}`);
   }
   // npm ci deletes node_modules first; on Windows that fails half-way if Studio still has files open.
   if (hasModules && studioRunning()) {
@@ -58,23 +65,26 @@ if (force || !hasModules || installedFor !== PLATFORM_ID) {
     process.exit(1);
   }
   // `npm ci` = clean install exactly from package-lock.json (which lists binaries for every OS).
-  const r = run("npm", ["ci", "--no-audit", "--no-fund"]);
+  const r = run("npm", ["ci", "--include=dev", "--no-audit", "--no-fund"]);
   if (!r.ok) {
     console.log(c.red("  ✗ npm ci failed — see errors above."));
     process.exit(1);
   }
-  fs.writeFileSync(MARKER, PLATFORM_ID);
   ok("Installed from package-lock.json");
 } else {
-  ok(`Already installed for ${PLATFORM_ID}`);
+  ok(`Already installed for ${PLATFORM_ID} and the current lockfile`);
 }
 
-// 3 ── Production plugins (catalog in plugins.json) ──────────────────────────
-step(3, "Production plugins");
+// 3 ── All supported plugins (catalog in plugins.json) ───────────────────────
+step(3, "Plugin catalog");
 {
   const { ensure } = await import("./plugins.mjs");
-  if (ensure()) ok("Core + production pack installed (more: launcher → p. Plugins)");
-  else warn("Some plugins failed to install", "npm run plugins -- ensure");
+  if (!ensure()) {
+    console.log(c.red("  ✗ Plugin installation is incomplete. Run npm run plugins -- ensure and rerun setup."));
+    process.exit(1);
+  }
+  fs.writeFileSync(MARKER, installId());
+  ok("All supported catalog plugins are installed");
 }
 
 // 4 ── Headless Chrome (Remotion renders frames with it) ─────────────────────
@@ -82,12 +92,11 @@ step(4, "Rendering browser");
 if (run("npx", ["remotion", "browser", "ensure"], { quiet: true }).ok) {
   ok("Chrome Headless Shell ready");
 } else {
-  warn(
-    "Could not prepare the headless browser",
-    process.platform === "linux"
-      ? "sudo apt install libnss3 libdbus-1-3 libatk1.0-0 libgbm-dev libasound2 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libatk-bridge2.0-0 libpango-1.0-0 libcairo2 libcups2"
-      : "Check your internet connection, then rerun setup.",
-  );
+  console.log(c.red("  ✗ Could not prepare the headless rendering browser."));
+  console.log(c.dim(process.platform === "linux"
+    ? "    Install Chrome's system libraries (see README.md), then rerun setup."
+    : "    Check your internet connection, then rerun setup."));
+  process.exit(1);
 }
 
 // 5 ── Python venv for tools/promo.py ───────────────────────────────────────
@@ -151,7 +160,10 @@ for (const d of [INBOX, RENDERS, DELIVERY, ARCHIVE]) {
   fs.mkdirSync(d, { recursive: true });
 }
 ok("Pipeline folders ready (inbox, out/renders, out/delivery, out/archive)");
-run("node", [path.join(STUDIO, "scripts", "sync-projects.mjs")], { quiet: true });
+if (!run("node", [path.join(STUDIO, "scripts", "sync-projects.mjs")], { quiet: true }).ok) {
+  console.log(c.red("  ✗ Project sync failed. Run npm run sync for details."));
+  process.exit(1);
+}
 
 // 8 ── App window browser ──────────────────────────────────────────────────
 step(8, "App window");
@@ -184,7 +196,7 @@ step(9, "AI assistants (optional)");
 // ── summary ───────────────────────────────────────────────────────────────
 console.log("");
 if (problems.length) {
-  console.log(c.yellow(`Setup finished with ${problems.length} warning(s). Core video rendering works; fix the above for the rest.`));
+  console.log(c.yellow(`Setup finished with ${problems.length} warning(s). Review the affected features above before using them.`));
 } else {
   console.log(c.green("✓ Setup complete."));
 }

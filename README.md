@@ -13,6 +13,9 @@
 Only requirement before setup: **Node.js 22.18+** (`winget install OpenJS.NodeJS.LTS` / `brew install node` / nodejs.org).
 Setup then installs everything else and tells you the exact command for anything it can't install itself
 (Python 3.9+, FFmpeg — both optional, only needed for the prep/deliver helpers; Linux may need Chrome libraries, which setup lists).
+Node 22 is the recommended runtime for the full plugin catalog: the pinned Cloud Run dependency
+`cloudevents@8.0.3` declares support only through Node 22. Local installation and rendering also passed on Node 24,
+but cloud provider integrations have not been exercised there.
 
 **Cloning on Windows:** use `git clone -c core.longpaths=true <repo-url>` (some bundled Remotion skill files have long paths).
 
@@ -20,11 +23,12 @@ Setup then installs everything else and tells you the exact command for anything
 `promo-studio/out/`, then run setup again. It detects that `node_modules` and the Python venv were built for
 another OS and rebuilds them (native binaries differ per OS), and restores the executable bit on the `.sh` /
 `.command` files. A Git clone brings only tracked files; commit any project briefs and prepared assets you need,
-then copy ignored originals, renders, deliveries, and archives separately. Tested: Windows 11 and
-Debian 12 (Docker). macOS uses the same Node/bash code path.
+then copy ignored originals, renders, deliveries, and archives separately. The full plugin installer has been
+verified on Windows 11; the earlier core setup was tested on Debian 12 (Docker). macOS uses the same Node/bash
+code path but still needs a clean-machine check with this full plugin catalog.
 
 The launcher also takes direct commands, handy for scripts:
-`./promo-studio.sh render demo-app` · `draft demo-app --formats 9x16` · `deliver demo-app` · `studio` · `doctor` · `setup`
+`./promo-studio.sh render <slug>` · `draft <slug> --formats 9x16` · `deliver <slug>` · `studio` · `doctor` · `setup`
 
 All the logic lives in `promo-studio/scripts/launcher.mjs` and `setup.mjs`; the `.bat` / `.sh` / `.command` files are 3-line wrappers.
 
@@ -101,13 +105,17 @@ npm run updates -- skills            # refresh Remotion agent skills from GitHub
 
 ## Plugins (Remotion packages)
 
-The catalog lives in `promo-studio/plugins.json`. Setup installs **core + the production pack** automatically; everything
-else is opt-in from menu **p** or the CLI. Installs use `npx remotion add`, which pins each package to the project's Remotion version.
+The catalog lives in `promo-studio/plugins.json`. Setup installs **all eight supported groups** from the lockfile,
+including the packages used by AI, 3D, cloud rendering, styling, integrations, and extra codecs. The Remotion packages
+are pinned to one version; their required peer packages are also in `package-lock.json`. Re-run setup after pulling a
+lockfile change. Cloud services, API features, and local transcription still need their own credentials or model files
+when you use them. Tailwind and SCSS are installed but must be enabled in the Remotion bundler configuration before use.
 
 ```
 npm run plugins -- list                          # everything, with ● installed / ○ available
-npm run plugins -- install cloud-render          # a whole group
-npm run plugins -- install @remotion/gsap        # a single package
+npm run plugins -- verify                        # check all catalog packages against the install
+npm run plugins -- ensure                        # repair missing catalog packages
+npm run plugins -- install <package>            # add a future single package
 npm run plugins -- remove @remotion/gsap
 ```
 
@@ -115,12 +123,12 @@ npm run plugins -- remove @remotion/gsap
 |---|---|---|
 | `core` | ✓ | renderer, bundler, transitions, google-fonts, media, zod-types, layout-utils, captions |
 | `production` | ✓ | animation-utils, fonts, gif, lottie, paths, shapes, noise, motion-blur, media-utils, preload, media-parser, light-leaks, effects, sfx, rough-notation, starburst, mac-cursors, rounded-text-box, animated-emoji, studio, mediabunny |
-| `captions-ai` | | install-whisper-cpp, whisper-webgpu, whisper-web, transformers, openai-whisper, elevenlabs, video-matting |
-| `motion-engines` | | gsap, rive, three, skia |
-| `styling` | | tailwind-v4, enable-scss (each needs one line in `remotion.config.ts`) |
-| `cloud-render` | | lambda, cloudrun, vercel (need cloud accounts) |
-| `integration` | | player, webcodecs, mcp, studio-protocol, licensing |
-| `codecs` | | @mediabunny/prores, ac3, dts (client footage formats) |
+| `captions-ai` | ✓ | install-whisper-cpp, whisper-webgpu, whisper-web, transformers, openai-whisper, elevenlabs, video-matting |
+| `motion-engines` | ✓ | gsap, rive, three, skia |
+| `styling` | ✓ | tailwind-v4, enable-scss (enable in the bundler config before use) |
+| `cloud-render` | ✓ | lambda, cloudrun, vercel (need cloud accounts) |
+| `integration` | ✓ | player, webcodecs, mcp, studio-protocol, licensing |
+| `codecs` | ✓ | @mediabunny/prores, ac3, dts (client footage formats) |
 
 Not offered: `@remotion/zod-types-v3` (this project uses Zod 4) and `@remotion/tailwind` (v3 — use `tailwind-v4`).
 

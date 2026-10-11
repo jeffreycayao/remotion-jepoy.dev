@@ -11,7 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { c, listProjects, MARKER, PLATFORM_ID, ROOT, run, STUDIO, studioRunning } from "./_platform.mjs";
+import { c, chooseRendererPort, installId, listProjects, MARKER, ROOT, run, STUDIO, studioRunning } from "./_platform.mjs";
 
 const CACHE_DIR = path.join(STUDIO, ".cache");
 const CACHE = path.join(CACHE_DIR, "updates.json");
@@ -95,6 +95,10 @@ export const verify = async ({ log = console.log } = {}) => {
     if (!/correct version/i.test(r.stdout)) throw new Error("`remotion versions` reports a mismatch");
     return `${remotionDeps().length} packages on ${target}`;
   });
+  await check("Plugin catalog matches the lockfile", async () => {
+    const { verify: verifyPlugins } = await import("./plugins.mjs");
+    if (!verifyPlugins()) throw new Error("Run npm run plugins -- ensure, then retry");
+  });
   await check("TypeScript + lint", () => {
     const r = run("npm", ["run", "-s", "lint"], { quiet: true });
     if (!r.ok) throw new Error((r.stdout + r.stderr).trim().split("\n").slice(-3).join(" "));
@@ -110,13 +114,14 @@ export const verify = async ({ log = console.log } = {}) => {
     const { bundle } = await import("@remotion/bundler");
     const { getCompositions, renderStill } = await import("@remotion/renderer");
     const serveUrl = await bundle({ entryPoint: path.join(STUDIO, "src", "index.ts") });
-    const comps = await getCompositions(serveUrl);
+    const port = await chooseRendererPort();
+    const comps = await getCompositions(serveUrl, { port });
     const sample = [comps.find((x) => x.id === "AppPromo-Template"), ...comps.filter((x) => x.id.startsWith(`${listProjects()[0]}-`))].filter(Boolean);
     if (!sample.length) throw new Error("no compositions found");
     const out = path.join(CACHE_DIR, "smoke");
     fs.mkdirSync(out, { recursive: true });
     for (const comp of sample) {
-      await renderStill({ serveUrl, composition: comp, output: path.join(out, `${comp.id}.jpg`), frame: Math.min(45, comp.durationInFrames - 1), imageFormat: "jpeg", scale: 0.25, inputProps: comp.props });
+      await renderStill({ serveUrl, composition: comp, output: path.join(out, `${comp.id}.jpg`), frame: Math.min(45, comp.durationInFrames - 1), imageFormat: "jpeg", scale: 0.25, inputProps: comp.props, port });
     }
     return `${comps.length} compositions, rendered ${sample.length}`;
   });
@@ -170,10 +175,12 @@ export const upgrade = async ({ to, ask } = {}) => {
   const up = run("npx", ["remotion", "upgrade", "--version", target, "--skip-skills"]);
   let ok = up.ok;
   if (ok) {
-    run("npm", ["install", "--no-audit", "--no-fund"], { quiet: true }); // relink bins, settle the lock file
-    fs.writeFileSync(MARKER, PLATFORM_ID);
-    console.log(c.bold("\n  ▸ Health checks"));
-    ok = (await verify()).ok;
+    ok = run("npm", ["install", "--no-audit", "--no-fund"], { quiet: true }).ok; // relink bins, settle the lock file
+    if (ok) {
+      fs.writeFileSync(MARKER, installId());
+      console.log(c.bold("\n  ▸ Health checks"));
+      ok = (await verify()).ok;
+    }
   } else {
     console.log(c.red("  ✗ The upgrade command failed."));
   }
@@ -186,7 +193,8 @@ export const upgrade = async ({ to, ask } = {}) => {
   console.log(c.yellow(`\n  ▸ Rolling back to Remotion ${from}…`));
   for (const f of ["package.json", "package-lock.json"]) fs.copyFileSync(path.join(backup, f), path.join(STUDIO, f));
   const restored = run("npm", ["ci", "--no-audit", "--no-fund"], { quiet: true }).ok;
-  fs.writeFileSync(MARKER, PLATFORM_ID);
+  if (restored) fs.writeFileSync(MARKER, installId());
+  else fs.rmSync(MARKER, { force: true });
   console.log(
     restored
       ? c.green(`  ✓ Rolled back — you're on Remotion ${installedVersion()} again, nothing else changed.`)
